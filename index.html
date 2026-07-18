@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Guide de l'Assistant Social — ASSP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf7ef; --card:#ffffff; --border:#e7e1d2; --ink:#2b332f; --sub:#7a8480; --muted:#9a8f6f;
+    --gold:#c9a24a; --agees:#0f766e; --agees-soft:#e8f3f1; --enfance:#0e7490; --enfance-soft:#e6f2f4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{color:var(--ink);-webkit-font-smoothing:antialiased;}
+  body.lang-ar{font-family:'Tajawal','Segoe UI',sans-serif;}
+  body.lang-fr{font-family:'Inter','Segoe UI',sans-serif;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;}
+  button{font-family:inherit;cursor:pointer;}
+  input,textarea,select{font-family:inherit;}
+  .icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .icon svg{width:100%;height:100%;}
+
+  .topbar{position:sticky;top:0;z-index:10;background:rgba(250,247,239,0.95);backdrop-filter:blur(6px);
+    padding:20px 16px 12px;border-bottom:1px solid #eee7d5;}
+  .backbtn{display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;background:none;border:none;
+    margin-bottom:12px;padding:0;}
+  .backbtn .icon{width:16px;height:16px;}
+  [dir="ltr"] .flip{transform:scaleX(-1);}
+
+  .toprow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px;}
+  .langbtn{display:flex;align-items:center;gap:5px;border:1px solid var(--border);background:#fff;border-radius:999px;
+    padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--ink);flex-shrink:0;}
+  .langbtn .icon{width:13px;height:13px;}
+
+  .home-wrap{padding:24px 16px 40px;}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.2px;color:var(--muted);margin-bottom:4px;}
+  h1{font-size:22px;font-weight:800;line-height:1.25;margin:0 0 4px;}
+  .lead{font-size:13.5px;color:var(--sub);line-height:1.6;margin:0 0 20px;}
+
+  .searchbox{position:relative;margin-bottom:24px;}
+  .searchbox input{width:100%;border:1px solid var(--border);background:var(--card);border-radius:16px;
+    padding:12px 40px 12px 16px;font-size:14px;color:var(--ink);outline:none;}
+  .searchbox input:focus{border-color:var(--agees);}
+  [dir="rtl"] .searchbox .icon-search{right:14px;}
+  [dir="ltr"] .searchbox .icon-search{left:14px;}
+  .searchbox .icon-search{position:absolute;top:50%;transform:translateY(-50%);width:17px;height:17px;color:#a39c86;}
+  [dir="rtl"] .searchbox input{padding:12px 40px 12px 16px;}
+  [dir="ltr"] .searchbox input{padding:12px 16px 12px 40px;}
+  [dir="rtl"] .searchbox .icon-clear{left:14px;}
+  [dir="ltr"] .searchbox .icon-clear{right:14px;}
+  .searchbox .icon-clear{position:absolute;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#a39c86;background:none;border:none;padding:0;display:none;}
+  .searchbox input:not(:placeholder-shown) ~ .icon-clear{display:block;}
+
+  .cat-card{width:100%;text-align:start;border:none;border-radius:20px;padding:20px;
+    display:flex;align-items:center;gap:16px;margin-bottom:12px;color:#fff;}
+  .cat-card:active{transform:scale(0.98);}
+  .cat-icon-wrap{width:56px;height:56px;flex-shrink:0;border-radius:16px;background:rgba(255,255,255,0.15);
+    display:flex;align-items:center;justify-content:center;}
+  .cat-icon-wrap .icon{width:26px;height:26px;color:#fff;}
+  .cat-title{font-size:17px;font-weight:800;}
+  .cat-sub{font-size:12.5px;color:rgba(255,255,255,0.8);margin-top:2px;}
+  .cat-count{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;}
+  .cat-chevron{width:20px;height:20px;color:rgba(255,255,255,0.7);flex-shrink:0;}
+
+  .results-count{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;}
+  .no-results{text-align:center;font-size:13.5px;color:#a39c86;padding:40px 0;}
+
+  .disp-card{width:100%;text-align:start;border-radius:18px;background:var(--card);border:1px solid var(--border);
+    padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .disp-card:active{transform:scale(0.98);}
+  .disp-group{font-size:13px;font-weight:500;margin-bottom:4px;}
+  .disp-name{font-size:15px;font-weight:700;color:var(--ink);line-height:1.4;}
+  .disp-desc{font-size:13px;color:var(--sub);margin-top:6px;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .disp-chevron{width:18px;height:18px;color:#b8b09a;flex-shrink:0;margin-top:4px;}
+  .edited-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin-inline-start:6px;}
+
+  .cat-header{display:flex;align-items:center;gap:12px;}
+  .cat-header-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .cat-header-icon .icon{width:20px;height:20px;}
+  .cat-header h1{font-size:19px;}
+  .cat-header .sub{font-size:12px;color:#8a8370;}
+
+  .body-pad{padding:16px;padding-bottom:90px;}
+
+  .tabs{display:flex;gap:8px;margin:14px 0 16px;}
+  .tab{flex:1;text-align:center;border-radius:12px;padding:10px 8px;font-size:13.5px;font-weight:700;
+    border:1px solid var(--border);background:#fff;color:#5a635f;}
+  .tab.active{color:#fff;border-color:transparent;}
+
+  .fw-block{border-radius:18px;background:var(--card);border:1px solid var(--border);padding:16px;margin-bottom:12px;}
+  .fw-block-title{font-size:13px;font-weight:800;margin-bottom:10px;}
+  .fw-item{margin-bottom:10px;}
+  .fw-item:last-child{margin-bottom:0;}
+  .fw-item .term{font-size:13px;font-weight:700;margin-bottom:2px;}
+  .fw-item .text{font-size:13px;color:#5a635f;line-height:1.6;}
+
+  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 -16px 16px;padding-inline:16px;}
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{flex-shrink:0;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:500;white-space:nowrap;
+    background:#fff;color:#3c4a47;border:1px solid #dcd6c8;}
+  .chip.active{color:#fdfaf3;}
+
+  .detail-eyebrow{font-size:12px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+  .detail-title{font-size:19px;font-weight:800;line-height:1.35;margin:0;}
+  .detail-legal{display:flex;align-items:flex-start;gap:6px;margin-top:8px;font-size:12.5px;color:var(--sub);}
+  .detail-legal .icon{width:13px;height:13px;margin-top:2px;flex-shrink:0;}
+  .detail-actions{display:flex;gap:8px;margin-top:12px;}
+  .action-btn{display:flex;align-items:center;gap:6px;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;
+    border:1px solid var(--border);background:#fff;color:var(--ink);}
+  .action-btn .icon{width:14px;height:14px;}
+  .action-btn.danger{color:#b3401f;border-color:#f0d3c4;background:#fdf3ee;}
+
+  .desc-box{border-radius:18px;padding:16px;font-size:14px;line-height:1.7;color:#454f4b;margin-bottom:16px;}
+  .notes-box{border-radius:18px;border:1px solid #e0c98a;background:#fdf8ea;color:#7a5c14;
+    padding:16px;font-size:13.5px;line-height:1.7;margin-bottom:16px;white-space:pre-line;}
+
+  .section{border-radius:18px;background:var(--card);border:1px solid var(--border);padding:16px;margin-bottom:16px;}
+  .section-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+  .section-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+  .section-icon .icon{width:15px;height:15px;}
+  .section-title{font-size:15px;font-weight:800;}
+
+  ul.bullets{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  ul.bullets li{display:flex;gap:8px;font-size:14px;line-height:1.65;color:#454f4b;}
+  ul.bullets li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:8px;}
+
+  ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
+  ol.steps li{display:flex;gap:10px;font-size:14px;line-height:1.65;color:#454f4b;}
+  .step-num{width:24px;height:24px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  .mini-table{display:flex;flex-direction:column;gap:8px;}
+  .mini-row{border-radius:12px;border:1px solid var(--border);padding:12px;}
+  .mini-a{font-size:13.5px;font-weight:800;margin-bottom:4px;}
+  .mini-b{font-size:13px;color:#5a635f;margin-bottom:2px;}
+  .mini-c{font-size:12.5px;color:#7a8480;}
+
+  .amount-box{border-radius:12px;padding:12px;margin-bottom:8px;}
+  .amount-box:last-child{margin-bottom:0;}
+  .amount-value{font-size:15px;font-weight:800;margin-bottom:4px;}
+  .amount-who{font-size:13px;color:#5a635f;line-height:1.6;}
+
+  .fab{position:fixed;bottom:24px;width:56px;height:56px;border-radius:50%;border:none;color:#fff;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.18);z-index:20;}
+  [dir="rtl"] .fab{left:50%;margin-left:-172px;}
+  [dir="ltr"] .fab{left:50%;margin-left:126px;}
+  .fab .icon{width:24px;height:24px;}
+
+  .form-wrap{padding:16px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+  .field .hint{font-size:11.5px;color:var(--muted);font-weight:400;margin-inline-start:4px;}
+  .field input[type=text], .field textarea{
+    width:100%;border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:13.5px;
+    background:#fff;color:var(--ink);outline:none;resize:vertical;
+  }
+  .field input[type=text]:focus, .field textarea:focus{border-color:var(--focus, var(--agees));}
+  .field textarea{min-height:80px;line-height:1.5;}
+  .form-actions{display:flex;gap:10px;margin-top:20px;}
+  .btn-primary{flex:1;border:none;border-radius:12px;padding:13px;font-size:14.5px;font-weight:700;color:#fff;}
+  .btn-secondary{flex:1;border:1px solid var(--border);background:#fff;border-radius:12px;padding:13px;font-size:14.5px;font-weight:700;color:var(--ink);}
+
+  .loading-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--sub);font-size:13.5px;}
+  .spinner{width:28px;height:28px;border-radius:50%;border:3px solid #e7e1d2;border-top-color:var(--agees);animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  ::selection{background:#c9a24a55;}
+</style>
+</head>
+<body class="lang-fr">
+<div id="app"></div>
+
+<script>
+/* ============================= UI STRINGS ============================= */
+const STRINGS = {
+  ar: {
+    dir:"rtl", htmlLang:"ar",
+    appEyebrow:"دليل الأخصائي الاجتماعي — ASSP",
+    homeTitle:"فئات التكفل الاجتماعي",
+    homeLead:"اختر الفئة لعرض البرامج، القاعدة القانونية، الوثائق والإجراءات والمؤسسات المعنية",
+    searchPlaceholder:"ابحث عن برنامج، منحة، إجراء...",
+    resultsCount:n=>n+" نتيجة",
+    noResults:"لا توجد نتائج مطابقة",
+    programsCount:n=>n+" برنامج وإجراء",
+    home:"الرئيسية",
+    tabPrograms:"البرامج والإجراءات",
+    tabLegal:"القاعدة القانونية",
+    legalTextsTitle:"النصوص المرجعية",
+    definitionsTitle:"تعريفات أساسية",
+    rightsTitle:"أبرز الحقوق القانونية",
+    dangerTitle:"حالات تستوجب الحماية (طفل في خطر)",
+    groupAll:"الكل",
+    missions:"المهام", conditions:"الشروط", documents:"الوثائق المطلوبة", procedure:"الإجراءات",
+    avantages:"المزايا والحقوق", institutions:"المؤسسات المعنية", amounts:"المبالغ الممنوحة",
+    who:"من يمكنه الإبلاغ", table:"جدول تفصيلي",
+    edit:"تعديل", save:"حفظ التعديلات", cancel:"إلغاء", addNew:"إضافة برنامج جديد",
+    addItemTitle:"إضافة برنامج / إجراء جديد", editItemTitle:"تعديل البرنامج",
+    delete:"حذف", deleteConfirm:"هل أنت متأكد من حذف هذا العنصر؟ لا يمكن التراجع.",
+    fieldName:"الاسم", fieldGroup:"المجموعة", fieldLegalBasis:"القاعدة القانونية",
+    fieldDescription:"الوصف", fieldNotes:"ملاحظات",
+    listHint:"سطر واحد لكل عنصر",
+    langToggle:"Français",
+    editedBadge:"معدَّل", customBadge:"مضاف",
+    loading:"جاري التحميل...",
+    savedToast:"تم الحفظ",
+  },
+  fr: {
+    dir:"ltr", htmlLang:"fr",
+    appEyebrow:"Guide de l'Assistant Social — ASSP",
+    homeTitle:"Catégories de prise en charge sociale",
+    homeLead:"Choisissez une catégorie pour afficher les dispositifs, le cadre légal, les documents, les procédures et les institutions concernées",
+    searchPlaceholder:"Rechercher un dispositif, une allocation, une procédure...",
+    resultsCount:n=>n+" résultat(s)",
+    noResults:"Aucun résultat trouvé",
+    programsCount:n=>n+" dispositifs",
+    home:"Accueil",
+    tabPrograms:"Dispositifs",
+    tabLegal:"Cadre légal",
+    legalTextsTitle:"Textes de référence",
+    definitionsTitle:"Définitions essentielles",
+    rightsTitle:"Principaux droits légaux",
+    dangerTitle:"Situations nécessitant une protection (enfant en danger)",
+    groupAll:"Tous",
+    missions:"Missions", conditions:"Conditions", documents:"Documents requis", procedure:"Procédure",
+    avantages:"Avantages et droits", institutions:"Institutions concernées", amounts:"Montants accordés",
+    who:"Qui peut signaler", table:"Tableau détaillé",
+    edit:"Modifier", save:"Enregistrer", cancel:"Annuler", addNew:"Ajouter un dispositif",
+    addItemTitle:"Ajouter un dispositif", editItemTitle:"Modifier le dispositif",
+    delete:"Supprimer", deleteConfirm:"Confirmer la suppression de cet élément ? Action irréversible.",
+    fieldName:"Nom", fieldGroup:"Groupe", fieldLegalBasis:"Base légale",
+    fieldDescription:"Description", fieldNotes:"Remarques",
+    listHint:"une ligne par élément",
+    langToggle:"العربية",
+    editedBadge:"Modifié", customBadge:"Ajouté",
+    loading:"Chargement...",
+    savedToast:"Enregistré",
+  }
+};
+
+/* ============================= DATA (bilingue) ============================= */
+
+const RIGHTS_AGEES = [
+  { art:{ar:"المادة 14",fr:"Article 14"}, text:{ar:"الحق في مجانية العلاج بالمرافق الصحية العمومية، مع جهاز وقاية من الأمراض والحوادث، وجهاز يقظة خاص بمن يعيشون بمفردهم لحمايتهم من مخاطر العزلة.",fr:"Droit à la gratuité des soins dans les établissements de santé publics, avec un dispositif de prévention des maladies et accidents, et un dispositif de veille pour les personnes vivant seules afin de les protéger des risques de l'isolement."}},
+  { art:{ar:"المادة 15",fr:"Article 15"}, text:{ar:"الاستفادة من مجانية أو تخفيض أسعار النقل البري والجوي والبحري والسككي، ويستفيد المرافق أيضاً من نفس الإجراءات إذا كان بصدد تلقي العلاج.",fr:"Bénéfice de la gratuité ou de la réduction des tarifs de transport terrestre, aérien, maritime et ferroviaire ; l'accompagnateur bénéficie des mêmes mesures lorsqu'il s'agit de recevoir des soins."}},
+  { art:{ar:"المادة 16",fr:"Article 16"}, text:{ar:"الأولوية في المرافق التي تضمن خدمة عمومية، وفي الصفوف الأمامية بالأماكن الثقافية والرياضية والترفيهية، وفي وسائل النقل العمومي.",fr:"Priorité dans les structures assurant un service public, dans les premiers rangs des lieux culturels, sportifs et de loisirs, ainsi que dans les transports publics."}},
+  { art:{ar:"المادتان 20-21",fr:"Articles 20-21"}, text:{ar:"الشخص المسن المعتمد على الغير يحتاج مساعدة الغير لإنجاز أعمال الحياة اليومية أو مراقبة منتظمة، ويستفيد المعوزون منهم من عناية خاصة.",fr:"La personne âgée dépendante est celle qui a besoin de l'aide d'autrui pour les actes de la vie quotidienne ou d'une surveillance régulière ; les personnes démunies parmi elles bénéficient d'une prise en charge particulière."}},
+  { art:{ar:"المادة 24",fr:"Article 24"}, text:{ar:"كل شخص مسن في وضعية صعبة و/أو بدون سند عائلي وموارده غير كافية، يفتح له الحق في مساعدة اجتماعية و/أو منحة مالية لا تقل عن ثلثي الأجر الوطني الأدنى المضمون.",fr:"Toute personne âgée en situation difficile et/ou sans soutien familial dont les ressources sont insuffisantes ouvre droit à une aide sociale et/ou une allocation financière ne pouvant être inférieure aux deux tiers du SNMG."}},
+  { art:{ar:"المادة 39",fr:"Article 39"}, text:{ar:"يُخصَّص سنوياً ضمن « الصندوق الخاص للتضامن الوطني » اعتمادات إضافية للتكفل بالأشخاص المسنين.",fr:"Un « Fonds spécial de solidarité nationale » alloue chaque année des crédits supplémentaires à la prise en charge des personnes âgées."}},
+  { art:{ar:"المادة 41",fr:"Article 41"}, text:{ar:"يوم 27 أفريل من كل سنة هو « اليوم الوطني للشخص المسن ».",fr:"Le 27 avril de chaque année est la « Journée nationale de la personne âgée »."}},
+];
+
+const LEGAL_FRAMEWORK_AGEES = [
+  { law:{ar:"قانون الأسرة رقم 84-11 (9 جوان 1984)",fr:"Loi de la famille n° 84-11 (9 juin 1984)"}, text:{ar:"المادتان 2 و3: العلاقات بين أفراد الأسرة تقوم على التضامن والتماسك وحسن الخُلق.",fr:"Art. 2 et 3 : les relations entre membres de la famille reposent sur la solidarité, la cohésion et la bonne moralité."}},
+  { law:{ar:"قانون الصحة رقم 85-05 (16 فيفري 1985)",fr:"Loi de la santé n° 85-05 (16 février 1985)"}, text:{ar:"المواد 67، 90، 91، 92: الأشخاص في وضعية صعبة، بمن فيهم المسنون، يستفيدون من الحماية الصحية والاجتماعية.",fr:"Art. 67, 90, 91, 92 : les personnes en situation difficile, dont les personnes âgées, bénéficient d'une protection sanitaire et sociale."}},
+  { law:{ar:"القانون رقم 10-12 (29 ديسمبر 2010)",fr:"Loi n° 10-12 (29 décembre 2010)"}, text:{ar:"النص المرجعي الأساسي لحماية الأشخاص المسنين، يسري على كل شخص بلغ 65 سنة فما فوق.",fr:"Texte de référence principal relatif à la protection des personnes âgées, applicable à toute personne ayant atteint 65 ans révolus."}},
+];
+
+const AGEES = [
+  { id:"fpa", group:{ar:"الاستقبال والإيواء",fr:"Accueil et hébergement"},
+    name:{ar:"دار المسنين — الإيواء الدائم (FPA)",fr:"Foyer pour Personnes Âgées — Hébergement permanent (FPA)"},
+    legalBasis:{ar:"المرسوم التنفيذي رقم 12-113 المؤرخ في 7 مارس 2012",fr:"Décret exécutif n° 12-113 du 7 mars 2012"},
+    description:{ar:"شبكة وطنية تضم 34 مؤسسة موزعة عبر 27 ولاية، تابعة لوزارة التضامن الوطني والأسرة وقضايا المرأة. مؤسسات عمومية ذات طابع إداري تتمتع بالشخصية المعنوية والاستقلال المالي.",fr:"Réseau national de 34 établissements répartis sur 27 wilayas, relevant du ministère de la Solidarité nationale, de la Famille et de la Condition de la femme. Établissements publics à caractère administratif, dotés de la personnalité morale et de l'autonomie financière."},
+    missions:{ar:["استقبال الأشخاص المسنين وضمان تكفل نفسي-اجتماعي مناسب","ضمان الإيواء والتغذية المتوازنة وتشجيع العلاقات مع العائلة والمحيط","اقتراح كل إجراء يشجع إعادة الإدماج العائلي للمسنين في وضعية تخلٍّ ومرافقتهم","القيام بالخطوات اللازمة لدى العائلات الحاضنة الراغبة في استقبال أشخاص مسنين","المشاركة في تنظيم أنشطة الدعم والرفاه بالتنسيق مع المؤسسات العمومية والحركة الجمعوية"],
+      fr:["Accueillir les personnes âgées et assurer une prise en charge psychosociale adaptée","Garantir l'hébergement et une alimentation équilibrée, et favoriser les relations avec la famille et l'entourage","Proposer toute mesure favorisant la réinsertion familiale des personnes âgées en situation d'abandon et les accompagner","Effectuer les démarches nécessaires auprès des familles d'accueil souhaitant recevoir des personnes âgées","Participer à l'organisation d'activités de soutien et de bien-être en coordination avec les institutions publiques et le mouvement associatif"]},
+    conditions:{ar:["بلوغ 65 سنة فما فوق","معوز و/أو بدون سند عائلي","صاحب دخل كافٍ (يساوي أو يفوق SNMG) لكنه في وضعية صعوبة و/أو بدون سند عائلي — يُلزَم بمساهمة مالية لتغطية نفقات التكفل"],
+      fr:["Être âgé de 65 ans révolus et plus","Être démuni et/ou sans soutien familial","Disposer d'un revenu suffisant (égal ou supérieur au SNMG) mais se trouver en situation difficile et/ou sans soutien familial — une participation financière aux frais de prise en charge est alors exigée"]},
+    procedure:{ar:["إيداع طلب مرفق بملف لدى مصالح العمل الاجتماعي والتضامن بالولاية","إجراء تحقيق اجتماعي للتأكد من واقعية الوضعية","القبول يصدر عن لجنة قبول المؤسسة بعد دراسة الملف ونتائج التحقيق الاجتماعي"],
+      fr:["Dépôt d'une demande accompagnée d'un dossier auprès des services de l'action sociale de la wilaya","Réalisation d'une enquête sociale pour vérifier la situation réelle","L'admission est prononcée par la commission d'admission de l'établissement après étude du dossier et des résultats de l'enquête sociale"]},
+    institutions:{ar:["مديرية العمل الاجتماعي والتضامن بالولاية (DAAS)","دور المسنين — 34 مؤسسة عبر 27 ولاية"],
+      fr:["Direction de l'Action Sociale et de la Solidarité de la wilaya (DAS)","Foyers pour personnes âgées — 34 établissements répartis sur 27 wilayas"]},
+  },
+  { id:"accueil-jour", group:{ar:"الاستقبال والإيواء",fr:"Accueil et hébergement"},
+    name:{ar:"مركز الاستقبال النهاري",fr:"Centre d'accueil de jour"},
+    legalBasis:{ar:"يعمل ضمن هياكل دور المسنين (FPA)",fr:"Fonctionne au sein des structures des foyers pour personnes âgées (FPA)"},
+    description:{ar:"يهدف إلى إبقاء الشخص المسن داخل عائلته مع تخفيف العبء عن الأسر المتكفلة بمسن. التوقيت: من 7 صباحاً إلى 7 مساءً.",fr:"Vise à maintenir la personne âgée au sein de sa famille tout en allégeant la charge des familles qui prennent en charge un parent âgé. Horaires : de 7h à 19h."},
+    missions:{ar:["مساعدة المسنين على الحفاظ على استقلاليتهم عبر تكفل فردي وعناية مناسبة","تطوير أنشطة ترفيهية وورشات علاج بالعمل","تقديم العلاجات والخدمات المناسبة بالتنسيق مع القطاعات المعنية","تقديم الدعم النفسي للمسنين المستقبَلين","تشجيع التبادل بين المسنين المقيمين والمسنين المستقبَلين نهاراً لمحاربة العزلة والوحدة"],
+      fr:["Aider les personnes âgées à préserver leur autonomie par une prise en charge individualisée et des soins adaptés","Développer des activités de loisirs et des ateliers d'ergothérapie","Assurer les soins et services adaptés en coordination avec les secteurs concernés","Apporter un soutien psychologique aux personnes accueillies","Favoriser les échanges entre résidents permanents et personnes accueillies en journée pour lutter contre l'isolement et la solitude"]},
+    conditions:{ar:["بلوغ 65 سنة فما فوق","يعيش بمفرده أو بمحيط عائلي يحتاج مرافقة نفسية-اجتماعية","غير مصاب باضطرابات نفسية حادة","لا يعاني من مرض خطير ومُعدٍ","صاحب دخل كافٍ لكن في وضعية صعوبة و/أو بدون سند عائلي، أو موضوع لدى عائلة حاضنة"],
+      fr:["Être âgé de 65 ans révolus et plus","Vivre seul ou dans un environnement familial nécessitant un accompagnement psychosocial","Ne pas souffrir de troubles psychiques aigus","Ne pas être atteint d'une maladie grave et contagieuse","Disposer d'un revenu suffisant mais se trouver en situation difficile et/ou sans soutien familial, ou être placé auprès d'une famille d'accueil"]},
+    procedure:{ar:["إيداع طلب مرفق بملف لدى مصالح العمل الاجتماعي والتضامن بالولاية","القبول تقرره لجنة قبول المؤسسة بعد دراسة الملف ونتائج التحقيق الاجتماعي"],
+      fr:["Dépôt d'une demande accompagnée d'un dossier auprès des services de l'action sociale de la wilaya","L'admission est décidée par la commission d'admission de l'établissement après étude du dossier et de l'enquête sociale"]},
+    institutions:{ar:["مديرية العمل الاجتماعي والتضامن بالولاية"], fr:["Direction de l'Action Sociale et de la Solidarité de la wilaya"]},
+  },
+  { id:"diar-rahma", group:{ar:"الاستقبال والإيواء",fr:"Accueil et hébergement"},
+    name:{ar:"دور الرحمة (Diar Rahma)",fr:"Diar Rahma"},
+    legalBasis:{ar:"المرسوم التنفيذي رقم 02-178 المؤرخ في 20 ماي 2002",fr:"Décret exécutif n° 02-178 du 20 mai 2002"},
+    description:{ar:"مؤسسات تستقبل فئات واسعة: مسنون بدون دخل و/أو بدون سند عائلي، أشخاص معوزون مصابون بأمراض مزمنة، أطفال وبالغون في وضعية هشاشة اجتماعية أو صعوبة نفسية، وكذا من يحتاج مساعدة ظرفية مثبتة لمدة لا تتجاوز 6 أشهر.",fr:"Établissements accueillant un large public : personnes âgées sans revenu et/ou sans soutien familial, personnes démunies atteintes de maladies chroniques, enfants et adultes en situation de précarité sociale ou de détresse psychologique, ainsi que toute personne nécessitant une aide ponctuelle avérée pour une durée n'excédant pas 6 mois."},
+    missions:{ar:["ضمان التكفل الاجتماعي والطبي والنفسي والتربوي","ضمان الاستقبال والإصغاء والإعلام والتوجيه والإيواء والإطعام","تطوير أنشطة الوقاية والتحسيس بالآفات الاجتماعية","ترقية أشكال المساعدة المستعجلة الأنسب للإدماج الاجتماعي-المهني","متابعة تطور وضعية الأشخاص المستقبَلين","اقتراح كل تدبير اجتماعي أو اقتصادي يخدم استقلالية المستفيدين","تقييم برامج إعادة الإدماج"],
+      fr:["Assurer la prise en charge sociale, médicale, psychologique et éducative","Assurer l'accueil, l'écoute, l'information, l'orientation, l'hébergement et la restauration","Développer des activités de prévention et de sensibilisation aux fléaux sociaux","Promouvoir les formes d'aide d'urgence les plus adaptées à l'insertion socioprofessionnelle","Assurer le suivi de l'évolution de la situation des personnes accueillies","Proposer toute mesure sociale ou économique favorisant l'autonomie des bénéficiaires","Évaluer les programmes de réinsertion"]},
+    procedure:{ar:["تقديم الطلب لدى مديرية العمل الاجتماعي والتضامن بالولاية التي توجد بها المؤسسة أو ملحقاتها"],
+      fr:["Dépôt de la demande auprès de la Direction de l'Action Sociale et de la Solidarité de la wilaya où se trouve l'établissement ou ses annexes"]},
+    institutions:{ar:["دار الرحمة ببئر خادم — ولاية الجزائر (وملحقاتها: حجوط-تيبازة، الناصرية-بومرداس، تمنراست)","دار الرحمة بقسنطينة (وملحقة عين الفوارة-سطيف)","دار الرحمة بالمسرغين — ولاية وهران (وملحقتا البيض وتلمسان)"],
+      fr:["Diar Rahma de Birkhadem — wilaya d'Alger (et ses annexes : Hadjout-Tipaza, Naciria-Boumerdès, Tamanrasset)","Diar Rahma de Constantine (et son annexe Aïn El Fouara-Sétif)","Diar Rahma de Misserghine — wilaya d'Oran (et ses annexes El Bayadh et Tlemcen)"]},
+  },
+  { id:"centres-prives", group:{ar:"الاستقبال والإيواء",fr:"Accueil et hébergement"},
+    name:{ar:"مراكز خاصة لاستقبال المسنين",fr:"Centres privés d'accueil pour personnes âgées"},
+    description:{ar:"سمحت الدولة للمستثمرين الخواص بفتح مراكز استقبال للمسنين، لتلبية رغبة كبار السن الذين لا يريدون البقاء عبئاً على عائلاتهم أو ليس لديهم من يتكفل بهم.",fr:"L'État a autorisé des investisseurs privés à ouvrir des centres d'accueil pour personnes âgées, afin de répondre au souhait des personnes âgées ne voulant pas être à charge de leur famille ou ne disposant d'aucun soutien."},
+    conditions:{ar:["ضمان النفاذ لذوي الاحتياجات الخاصة في كل الفضاءات، واستعمال تجهيزات مطابقة لمعايير الأمن","التصريح بمصادر ومبالغ التمويل عند التأسيس وسنوياً لوزارة التضامن","إشهار قائمة الخدمات والتعريفات"],
+      fr:["Garantir l'accessibilité aux personnes à besoins spécifiques dans tous les espaces, et utiliser des équipements conformes aux normes de sécurité","Déclarer les sources et montants du financement à la création puis annuellement au ministère de la Solidarité","Afficher la liste des prestations et des tarifs"]},
+    procedure:{ar:["إيداع ملف مباشرة لدى المؤسسة الخاصة المعنية"], fr:["Dépôt du dossier directement auprès de l'établissement privé concerné"]},
+  },
+  { id:"allocation-forfaitaire", group:{ar:"المساعدات المالية",fr:"Aides financières"},
+    name:{ar:"المنحة الجزافية للتضامن (الشبكة الاجتماعية)",fr:"Allocation forfaitaire de solidarité (Filet social)"},
+    legalBasis:{ar:"القانون رقم 83-11 (2 جويلية 1983) — المرسوم رقم 94-336 (24 أكتوبر 1994) — المرسوم الرئاسي رقم 25-207 (30 جوان 2025)",fr:"Loi n° 83-11 du 2 juillet 1983 — Décret n° 94-336 du 24 octobre 1994 — Décret présidentiel n° 25-207 du 30 juin 2025"},
+    description:{ar:"منحة مالية شهرية موجهة لفئات محددة من الأشخاص المعوزين، منها الأشخاص المسنون فوق 60 سنة غير المقيمين بمؤسسة متخصصة.",fr:"Allocation financière mensuelle destinée à des catégories déterminées de personnes démunies, dont les personnes âgées de plus de 60 ans non hébergées en établissement spécialisé."},
+    amounts:{ar:[{value:"7 000 دج / شهر",who:"رب أسرة عاجز عن العمل، شخص يعيش بمفرده بدون عائلة وعاجز جسدياً عن العمل، امرأة ربة أسرة أقل من 60 سنة، شخص فوق 60 سنة غير مقيم بمؤسسة متخصصة، شخص فوق 18 سنة مصاب بمرض مزمن معجز أو حامل لبطاقة ذوي الاحتياجات الخاصة"},{value:"12 000 دج / شهر",who:"شخص ذو احتياجات خاصة بالغ (18 سنة فما فوق) بنسبة عجز 100%، أو أسرة متكفلة بشخص يحتاج عناية بعجز 100%"}],
+      fr:[{value:"7 000 DA / mois",who:"Chef de famille inapte au travail, personne vivant seule sans famille et physiquement inapte au travail, femme chef de famille de moins de 60 ans, personne de plus de 60 ans non hébergée en établissement spécialisé, personne de plus de 18 ans atteinte d'une maladie chronique invalidante ou titulaire de la carte de personne à besoins spécifiques"},{value:"12 000 DA / mois",who:"Personne adulte (18 ans et plus) à besoins spécifiques avec un taux d'invalidité de 100 %, ou famille prenant en charge une personne nécessitant des soins avec un taux d'invalidité de 100 %"}]},
+    conditions:{ar:["الجنسية الجزائرية","الإقامة بالجزائر","عدم توفر أي دخل (لا للمعني ولا لزوجه) مهما كانت طبيعته","توفر الوثائق الثبوتية اللازمة (بطاقة ذوي الاحتياجات الخاصة، شهادة عجز...)"],
+      fr:["Nationalité algérienne","Résidence en Algérie","Absence de tout revenu (pour l'intéressé et son conjoint) quelle qu'en soit la nature","Disponibilité des pièces justificatives nécessaires (carte de personne à besoins spécifiques, certificat d'invalidité, etc.)"]},
+    documents:{ar:["مستخرج ميلاد أصلي (الزوج والزوجة)","الشهادة العائلية","شهادة إقامة + نسخة من بطاقة التعريف الوطنية (الزوج والزوجة)","صورتان (02) شمسيتان","شهادة عدم الخضوع للضريبة (الزوج والزوجة)","شهادة عدم الانخراط بالـ CNAS (الزوج والزوجة)","شهادة عدم الانخراط بالـ CASNOS","نسخة من بطاقة المعاق لذوي الاحتياجات الخاصة","شهادة عدم الزواج للمرأة المطلقة","صك بريدي مشطوب"],
+      fr:["Extrait de naissance original (époux et épouse)","Certificat de composition familiale","Certificat de résidence + copie de la carte d'identité nationale (époux et épouse)","Deux (02) photos d'identité","Attestation de non-imposition (époux et épouse)","Attestation de non-affiliation à la CNAS (époux et épouse)","Attestation de non-affiliation à la CASNOS","Copie de la carte d'invalidité pour personnes à besoins spécifiques","Certificat de non-remariage pour la femme divorcée","Chèque postal barré"]},
+    procedure:{ar:["تكوين ملف كامل يتضمن الوثائق الثبوتية","إيداع الملف لدى مديرية العمل الاجتماعي أو البلدية أو المديرية المعنية","الخضوع لتحقيق اجتماعي يجريه مساعد اجتماعي للتأكد من واقعية الوضعية","انتظار قرار المنح من طرف لجنة المساعدة الاجتماعية","تلقي المساعدة المالية حسب الدورية المحددة (شهرية، فصلية أو استثنائية)"],
+      fr:["Constitution d'un dossier complet comprenant les pièces justificatives","Dépôt du dossier auprès de la direction de l'action sociale, de la commune ou de la direction compétente","Enquête sociale menée par un assistant social pour vérifier la réalité de la situation","Attente de la décision d'octroi par la commission d'aide sociale","Perception de l'aide financière selon la périodicité fixée (mensuelle, trimestrielle ou exceptionnelle)"]},
+    institutions:{ar:["مديرية العمل الاجتماعي والتضامن (DAS)","البلدية"], fr:["Direction de l'Action Sociale et de la Solidarité (DAS)","La commune (APC)"]},
+  },
+  { id:"carte-senior", group:{ar:"وثائق ومزايا",fr:"Documents et avantages"},
+    name:{ar:"بطاقة الشخص المسن (Carte Senior)",fr:"Carte de la personne âgée (Carte Senior)"},
+    legalBasis:{ar:"المادة 40 من القانون 10-12 — المرسوم التنفيذي رقم 13-139 المؤرخ في 10 أفريل 2013",fr:"Article 40 de la loi 10-12 — Décret exécutif n° 13-139 du 10 avril 2013"},
+    description:{ar:"بطاقة يستحدثها وزير التضامن الوطني لفائدة الأشخاص المسنين، هدفها تبسيط الإجراءات الإدارية لمختلف الخدمات العمومية.",fr:"Carte instituée par le ministre de la Solidarité nationale en faveur des personnes âgées, dans le but de simplifier les démarches administratives pour l'accès aux différents services publics."},
+    conditions:{ar:["بلوغ 65 سنة فما فوق","معوز و/أو بدون سند عائلي، أو في وضعية صعوبة أو هشاشة اجتماعية"],
+      fr:["Être âgé de 65 ans révolus et plus","Être démuni et/ou sans soutien familial, ou en situation difficile ou de précarité sociale"]},
+    notes:{ar:"ملاحظة مهمة: البطاقة لا تُمنح تلقائياً لكل الأشخاص المسنين — هي مخصصة لمن هم في وضعية حاجة فعلية.",fr:"Remarque importante : la carte n'est pas délivrée automatiquement à toute personne âgée — elle est réservée à celles se trouvant en situation de besoin réel."},
+    documents:{ar:["طلب رسمي","نسخة من وثيقة الهوية (بطاقة تعريف وطنية أو جواز سفر)","شهادة طبية (خاصة بالأمراض المزمنة)","شهادة عدم التأمين الاجتماعي وعدم الدخل (عند الاقتضاء)","صور شمسية"],
+      fr:["Demande officielle","Copie d'une pièce d'identité (carte nationale ou passeport)","Certificat médical (pour les maladies chroniques)","Attestation de non-affiliation à la sécurité sociale et de non-revenu (le cas échéant)","Photos d'identité"]},
+    procedure:{ar:["التقرب من مديرية العمل الاجتماعي والتضامن (DAS) بالولاية","تكوين وإيداع الملف (الوثائق الثبوتية للوضعية الاجتماعية)","معالجة الملف ← تسليم البطاقة"],
+      fr:["Se rapprocher de la Direction de l'Action Sociale et de la Solidarité (DAS) de la wilaya","Constitution et dépôt du dossier (pièces justificatives de la situation sociale)","Traitement du dossier ← remise de la carte"]},
+    avantages:{ar:["ثقافة: تخفيض 50% على تذاكر المسارح وقاعات السينما العمومية + دخول مجاني للمتاحف الوطنية","سياحة: تخفيض 50% على خدمات السياحة الحرارية + نقل وإقامة ورحلات مجانية عبر الديوان الوطني الجزائري للسياحة (ONAT) + تكوين مجاني في الحرف اليدوية","ضمان اجتماعي: فضاءات « الممر الأخضر » بوكالات CNAS لمعالجة سريعة + وسطاء اجتماعيون لمرافقة المستفيدين + مساعدة في الحصول على بطاقة الشفاء (Chifa)"],
+      fr:["Culture : réduction de 50 % sur les billets de théâtre et de cinéma publics + entrée gratuite aux musées nationaux","Tourisme : réduction de 50 % sur les prestations de thermalisme + transport, hébergement et excursions gratuits via l'Office National Algérien du Tourisme (ONAT) + formation gratuite en artisanat","Sécurité sociale : espaces « couloir vert » au sein des agences CNAS pour un traitement rapide + médiateurs sociaux pour accompagner les bénéficiaires + aide à l'obtention de la carte Chifa"]},
+    institutions:{ar:["مديرية العمل الاجتماعي والتضامن (DAS)","وزارة التضامن الوطني"], fr:["Direction de l'Action Sociale et de la Solidarité (DAS)","Ministère de la Solidarité nationale"]},
+  },
+];
+
+const LEGAL_FRAMEWORK_ENFANCE = [
+  { law:{ar:"القانون رقم 15-12 (15 جويلية 2015)",fr:"Loi n° 15-12 (15 juillet 2015)"}, text:{ar:"النص المرجعي الأساسي لحماية الطفل — المادة 2: الطفل هو كل شخص لم يبلغ 18 سنة كاملة.",fr:"Texte de référence principal relatif à la protection de l'enfant — Art. 2 : l'enfant est toute personne n'ayant pas atteint 18 ans révolus."}},
+  { law:{ar:"قانون الأسرة رقم 84-11",fr:"Loi de la famille n° 84-11"}, text:{ar:"المواد 116 إلى 125 — الكفالة.",fr:"Art. 116 à 125 — La kafala."}},
+];
+
+const DEFINITIONS_ENFANCE = [
+  { term:{ar:"الطفل",fr:"L'enfant"}, text:{ar:"كل شخص لم يبلغ ثمانية عشر (18) سنة كاملة — المادة 2.",fr:"Toute personne n'ayant pas atteint dix-huit (18) ans révolus — Art. 2."}},
+  { term:{ar:"الطفل في خطر",fr:"L'enfant en danger"}, text:{ar:"الطفل الذي تكون صحته أو أخلاقه أو تربيته أو أمنه في خطر أو معرّضة لأن تكون كذلك، أو تكون ظروف حياته أو سلوكه من شأنها تعريضه لخطر محتمل يهدد مستقبله — المادة 2.",fr:"L'enfant dont la santé, la moralité, l'éducation ou la sécurité sont en danger ou susceptibles de l'être, ou dont les conditions de vie ou le comportement risquent de compromettre son avenir — Art. 2."}},
+  { term:{ar:"الطفل الجانح",fr:"L'enfant délinquant"}, text:{ar:"الطفل الذي يرتكب فعلاً مجرَّماً وعمره 10 سنوات على الأقل وقت ارتكاب المخالفة — المادة 2.",fr:"L'enfant qui commet un fait qualifié crime ou délit et qui est âgé d'au moins 10 ans au moment des faits — Art. 2."}},
+  { term:{ar:"الممثل الشرعي للطفل",fr:"Le représentant légal de l'enfant"}, text:{ar:"وليه، وصيّه، من يكفله (الكافل)، مقدّمه، أو من له حضانته.",fr:"Son tuteur, son curateur, son kafil, la personne qui en a la garde ou qui en assure la tutelle."}},
+];
+
+const DANGER_SITUATIONS = {
+  ar:["فقدان الوالدين وانعدام السند العائلي","التخلي والتشرد","المساس بالحق في التعليم","تسول الطفل أو تعريضه للتسول","عجز الوالدين عن ضبط سلوكيات مضرة","إخلال ملحوظ ومستمر بالتربية والصون","سوء المعاملة (تعذيب، مساس بالسلامة الجسدية، حجز، حرمان من الغذاء، عنف)","الطفل ضحية جريمة من ممثله الشرعي أو من الغير","الاستغلال الجنسي بكل أشكاله","الاستغلال الاقتصادي (عمل يضر بالتمدرس أو الصحة)","الطفل ضحية نزاعات مسلحة أو اضطرابات أو انعدام أمن","الطفل اللاجئ"],
+  fr:["Perte des parents et absence de soutien familial","L'abandon et l'errance","L'atteinte au droit à l'éducation","La mendicité de l'enfant ou son exposition à la mendicité","L'incapacité des parents à maîtriser des comportements nuisibles","Un manquement notable et continu à l'éducation et à la protection","Les mauvais traitements (torture, atteinte à l'intégrité physique, séquestration, privation de nourriture, violence)","L'enfant victime d'une infraction commise par son représentant légal ou par un tiers","L'exploitation sexuelle sous toutes ses formes","L'exploitation économique (travail nuisant à la scolarité ou à la santé)","L'enfant victime de conflits armés, de troubles ou d'insécurité","L'enfant réfugié"]
+};
+
+const ENFANCE = [
+  { id:"pmi", group:{ar:"الطفولة العادية",fr:"Enfance ordinaire"},
+    name:{ar:"الحماية الأمومية والطفولية (PMI)",fr:"Protection Maternelle et Infantile (PMI)"},
+    description:{ar:"مصلحة صحية عمومية مجانية موجهة للأطفال من 0 إلى 6 سنوات وللنساء الحوامل.",fr:"Service de santé public gratuit destiné aux enfants de 0 à 6 ans et aux femmes enceintes."},
+    conditions:{ar:["نفاذ شامل ومجاني بالقطاع العمومي، دون شرط الدخل"], fr:["Accès gratuit et généralisé dans le secteur public, sans condition de revenu"]},
+    procedure:{ar:["التوجه مباشرة لأقرب مركز PMI أو عيادة متعددة الخدمات من مكان السكن","فتح دفتر صحي للطفل أو دفتر متابعة الحمل","متابعة دورية مبرمجة (تلقيح، وزن، استشارات)"],
+      fr:["Se rendre directement au centre PMI ou à la polyclinique la plus proche du domicile","Ouverture d'un carnet de santé de l'enfant ou d'un carnet de suivi de grossesse","Suivi périodique programmé (vaccination, pesée, consultations)"]},
+  },
+  { id:"allocation-scolaire", group:{ar:"الطفولة العادية",fr:"Enfance ordinaire"},
+    name:{ar:"المنحة المدرسية",fr:"Allocation scolaire"},
+    description:{ar:"مساعدة موجهة للأطفال المتمدرسين من عائلات ذات دخل ضعيف.",fr:"Aide destinée aux enfants scolarisés issus de familles à faible revenu."},
+    conditions:{ar:["دخل الأسرة أقل من السقف المحدد تنظيمياً","تمدرس فعلي للطفل"], fr:["Revenu familial inférieur au plafond fixé réglementairement","Scolarisation effective de l'enfant"]},
+    documents:{ar:["شهادة تمدرس الطفل","إثبات الدخل / الوضعية الاجتماعية"], fr:["Certificat de scolarité de l'enfant","Justificatif de revenu / de la situation sociale"]},
+    procedure:{ar:["إيداع الملف لدى مديرية التربية أو البلدية حسب الإجراء المعمول به لكل سنة دراسية","انتظار قرار المنح"],
+      fr:["Dépôt du dossier auprès de la direction de l'éducation ou de la commune selon la procédure en vigueur pour chaque année scolaire","Attente de la décision d'octroi"]},
+  },
+  { id:"cantines", group:{ar:"الطفولة العادية",fr:"Enfance ordinaire"},
+    name:{ar:"المطاعم المدرسية",fr:"Cantines scolaires"},
+    description:{ar:"موجهة لتلاميذ الطور الابتدائي، خاصة بالمناطق الريفية والمعزولة.",fr:"Destinées aux élèves du cycle primaire, en particulier dans les zones rurales et enclavées."},
+    procedure:{ar:["التسجيل المباشر لدى المؤسسة المدرسية، عادة في بداية السنة الدراسية، دون ملف خاص في أغلب الحالات"],
+      fr:["Inscription directe auprès de l'établissement scolaire, généralement en début d'année scolaire, sans dossier spécifique dans la plupart des cas"]},
+  },
+  { id:"petite-enfance", group:{ar:"الطفولة العادية",fr:"Enfance ordinaire"},
+    name:{ar:"مؤسسات ومراكز استقبال الطفولة المبكرة",fr:"Établissements et structures d'accueil de la petite enfance"},
+    legalBasis:{ar:"المرسوم التنفيذي رقم 08-287 المؤرخ في 17 سبتمبر 2008",fr:"Décret exécutif n° 08-287 du 17 septembre 2008"},
+    table:{ar:[{a:"الحضانة (Crèche)",b:"من 3 أشهر إلى 3 سنوات",c:"استقبال منتظم"},{a:"روضة الأطفال (Jardin d'enfants)",b:"3 سنوات فما فوق، غير متمدرسين",c:"استقبال منتظم"},{a:"دار الحضانة (Halte-garderie)",b:"أقل من 5 سنوات",c:"استقبال غير منتظم / عرضي"},{a:"مؤسسة متعددة الاستقبال",b:"متغيّر",c:"تجمع الأشكال السابقة"}],
+      fr:[{a:"La crèche",b:"De 3 mois à 3 ans",c:"Accueil régulier"},{a:"Le jardin d'enfants",b:"3 ans et plus, non scolarisés",c:"Accueil régulier"},{a:"La halte-garderie",b:"Moins de 5 ans",c:"Accueil irrégulier / occasionnel"},{a:"L'établissement à accueil multiple",b:"Variable",c:"Regroupe les formes précédentes"}]},
+    procedure:{ar:["التوجه مباشرة للمؤسسة (عمومية أو معتمدة)","تقديم الوثائق المطلوبة من طرف المؤسسة (الحالة المدنية للطفل، دفتر التلقيح)","إمضاء النظام الداخلي / عقد الاستقبال"],
+      fr:["Se rendre directement à l'établissement (public ou agréé)","Fournir les documents demandés par l'établissement (état civil de l'enfant, carnet de vaccination)","Signature du règlement intérieur / contrat d'accueil"]},
+  },
+  { id:"signalement", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"الإبلاغ عن طفل في خطر",fr:"Signalement d'un enfant en danger"},
+    legalBasis:{ar:"القانون رقم 15-12 — المادة 22",fr:"Loi n° 15-12 — Article 22"},
+    description:{ar:"الخطوة الأولى للتكفل بطفل في خطر هي الإخطار. مصلحة الوسط المفتوح (SMO)، الموجودة بكل ولاية، هي أول جهة تُخطَر.",fr:"La première étape de la prise en charge d'un enfant en danger est le signalement. Le Service du Milieu Ouvert (SMO), présent dans chaque wilaya, est la première instance saisie."},
+    who:{ar:["الطفل نفسه و/أو ممثله الشرعي","الشرطة القضائية","الوالي، رئيس المجلس الشعبي البلدي","كل جمعية أو مؤسسة عمومية/خاصة تعمل لصالح الطفولة","المساعدون الاجتماعيون، المربّون، الأساتذة، الأطباء","أي شخص طبيعي أو معنوي آخر","يمكن لمصلحة الوسط المفتوح (SMO) أن تتحرك من تلقاء نفسها"],
+      fr:["L'enfant lui-même et/ou son représentant légal","La police judiciaire","Le wali, le président de l'Assemblée populaire communale","Toute association ou institution publique/privée œuvrant en faveur de l'enfance","Les assistants sociaux, éducateurs, enseignants, médecins","Toute autre personne physique ou morale","Le SMO peut se saisir de sa propre initiative"]},
+    institutions:{ar:["مصلحة الوسط المفتوح (SMO) بالولاية","مديرية العمل الاجتماعي (DAS)","قاضي الأحداث (تدخل مباشر ممكن، حتى شفهياً)","الشرطة / الدرك الوطني","وكيل الجمهورية","المندوب الوطني لحماية الطفولة"],
+      fr:["Service du Milieu Ouvert (SMO) de la wilaya","Direction de l'Action Sociale (DAS)","Le juge des mineurs (intervention directe possible, même orale)","La police / la Gendarmerie nationale","Le procureur de la République","Le Délégué national à la protection de l'enfance"]},
+    procedure:{ar:["تحقيق اجتماعي: تنقل إلى عين المكان، سماع الطفل وممثله الشرعي (فوراً في حالة الاستعجال)","التحقق من وجود الخطر فعلياً","البحث عن اتفاق مع الممثل الشرعي حول التدبير الواجب اتخاذه","إشراك الطفل البالغ 13 سنة فما فوق في القرار، وإعلامه بحقه في رفض الاتفاق","تحرير محضر موقَّع يثبت الاتفاق"],
+      fr:["Enquête sociale : déplacement sur les lieux, audition de l'enfant et de son représentant légal (immédiatement en cas d'urgence)","Vérification de l'existence réelle du danger","Recherche d'un accord avec le représentant légal sur la mesure à prendre","Association de l'enfant âgé de 13 ans et plus à la décision, et information de son droit de refuser l'accord","Rédaction d'un procès-verbal signé constatant l'accord"]},
+    notes:{ar:"حماية المبلِّغ: لا يُكشف عن هويته دون موافقته. كل من أبلغ بحسن نية يُعفى من كل مسؤولية إدارية أو مدنية أو جزائية، حتى في غياب النتيجة (المادتان 18 و31).\n\nحالات وجوب إخطار قاضي الأحداث: عدم التوصل لاتفاق خلال 10 أيام من الإخطار، تراجع الطفل أو ممثله عن الاتفاق، فشل التدبير الاتفاقي رغم المراجعة، أو فوراً في حالة خطر داهم أو استحالة ترك الطفل في أسرته.",
+      fr:"Protection du signalant : son identité n'est pas révélée sans son consentement. Toute personne ayant signalé de bonne foi est exonérée de toute responsabilité administrative, civile ou pénale, même en l'absence de résultat (art. 18 et 31).\n\nCas de saisine obligatoire du juge des mineurs : absence d'accord dans un délai de 10 jours à compter du signalement, rétractation de l'enfant ou de son représentant, échec de la mesure conventionnelle malgré révision, ou immédiatement en cas de danger imminent ou d'impossibilité de laisser l'enfant dans sa famille."},
+  },
+  { id:"juge-mineurs", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"الإجراء أمام قاضي الأحداث",fr:"Procédure devant le juge des mineurs"},
+    description:{ar:"القاضي المختص إقليمياً هو قاضي مكان إقامة الطفل أو ممثله الشرعي، أو مكان العثور على الطفل.",fr:"Le juge territorialement compétent est celui du lieu de résidence de l'enfant ou de son représentant légal, ou du lieu où l'enfant a été trouvé."},
+    procedure:{ar:["إعلام الطفل و/أو ممثله الشرعي","سماع الطفل والممثل الشرعي وأخذ رأيهما (يمكن للطفل الاستعانة بمحامٍ)","إجراء تحقيق اجتماعي وفحوصات طبية ونفسية وعقلية","اتخاذ تدابير مؤقتة عند الحاجة: الإبقاء بالأسرة، التسليم لقريب أو عائلة موثوقة، الإيداع المؤقت بمركز متخصص أو مصلحة التكفل بالطفولة، أو الإيداع بمؤسسة استشفائية عند الضرورة"],
+      fr:["Information de l'enfant et/ou de son représentant légal","Audition de l'enfant et du représentant légal et recueil de leur avis (l'enfant peut être assisté d'un avocat)","Réalisation d'une enquête sociale et d'examens médicaux, psychologiques et psychiatriques","Adoption de mesures provisoires en cas de besoin : maintien dans la famille, remise à un proche ou une famille de confiance, placement provisoire dans un centre spécialisé ou un service de prise en charge de l'enfance, ou placement dans un établissement hospitalier en cas de nécessité"]},
+    notes:{ar:"التدابير المؤقتة: مدة أقصاها 6 أشهر، والإخطار خلال 48 ساعة.\nالأمر النهائي: مدة سنتان قابلة للتجديد دون تجاوز سن الرشد الجزائي (تمديد استثنائي حتى 21 سنة)، بدون أي طريق طعن.\nمراجعة التدبير: ممكنة خلال أجل أقصاه شهر واحد.\nطلب استرجاع الحضانة: ينتظر 6 أشهر على الأقل من الإيداع، مع إثبات القدرة على تربية الطفل وتحسّن السلوك؛ في حال الرفض، لا يُجدَّد الطلب إلا بعد 3 أشهر.",
+      fr:"Mesures provisoires : durée maximale de 6 mois, notification dans les 48 heures.\nOrdonnance définitive : durée de deux ans renouvelable sans dépasser l'âge de la majorité pénale (prolongation exceptionnelle jusqu'à 21 ans), sans aucune voie de recours.\nRévision de la mesure : possible dans un délai maximal d'un mois.\nDemande de restitution de la garde : nécessite un délai d'au moins 6 mois depuis le placement, avec preuve de la capacité à éduquer l'enfant et de l'amélioration du comportement ; en cas de refus, la demande ne peut être renouvelée qu'après 3 mois."},
+  },
+  { id:"kafala", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"الكفالة",fr:"La Kafala"},
+    legalBasis:{ar:"قانون الأسرة رقم 84-11 — المواد 116 إلى 125",fr:"Loi de la famille n° 84-11 — Articles 116 à 125"},
+    description:{ar:"تكفل تطوعي بإعالة وتربية وحماية طفل قاصر، دون أن ينشئ ذلك أي نسب.",fr:"Engagement volontaire de prendre en charge, éduquer et protéger un enfant mineur, sans que cela n'établisse de filiation."},
+    conditions:{ar:["الكافل: مسلم، سليم العقل، حسن السيرة والسلوك، يملك موارد كافية لإعالة الطفل","يمكن أن يكون الكافل رجلاً أو امرأة، متزوجاً، أرملاً، مطلقاً أو أعزب — وفي حال الزواج تُشترط موافقة الزوج الآخر","الطفل: قاصر (أقل من 19 سنة) وأصغر سناً من الكافل، جزائري الجنسية أو أجنبي","موافقة الطفل إذا كان له تمييز كافٍ"],
+      fr:["Le kafil : musulman, sain d'esprit, de bonne moralité, disposant de ressources suffisantes pour subvenir aux besoins de l'enfant","Le kafil peut être un homme ou une femme, marié(e), veuf(ve), divorcé(e) ou célibataire — en cas de mariage, le consentement du conjoint est requis","L'enfant : mineur (moins de 19 ans) et plus jeune que le kafil, de nationalité algérienne ou étrangère","Consentement de l'enfant s'il a un discernement suffisant"]},
+    documents:{ar:["تصريح موافقة الوالدين أو الجهة المختصة (حسب حالة النسب)","نسب معروف ووالدان أحياء وقادران: موافقة الوالدين معاً","وفاة أحد الوالدين أو سقوط ولايته: تكفي موافقة الآخر","وفاة الوالدين معاً: موافقة مجلس العائلة","نسب مجهول (طفل مساعدة عمومية): موافقة مدير مصلحة العمل الاجتماعي (DAS) بقرار إداري"],
+      fr:["Attestation de consentement des parents ou de l'organisme compétent (selon la situation de filiation)","Filiation connue et parents vivants et aptes : consentement des deux parents","Décès d'un parent ou déchéance de son autorité : consentement de l'autre parent suffit","Décès des deux parents : consentement du conseil de famille","Filiation inconnue (enfant assisté public) : consentement du directeur de l'action sociale (DAS) par décision administrative"]},
+    procedure:{ar:["الكفالة القضائية: حصول الكافل على تصريح الموافقة ← إيداع عريضة ولائية لدى محكمة موطن الكافل (أو موطن الطفل إن كان الكافل مقيماً بالخارج) ← تحقق القاضي من الشروط ← حكم نهائي بالكفالة ← إحالته لضابط الحالة المدنية للتأشير بهامش عقد ميلاد الطفل","الكفالة الموثّقة (بين الأقارب): توجه الوالدين للموثق ← تحقق الموثق من الشروط ← تحرير عقد كفالة موثق"],
+      fr:["Kafala judiciaire : obtention de l'attestation de consentement ← dépôt d'une requête gracieuse auprès du tribunal du domicile du kafil (ou du domicile de l'enfant si le kafil réside à l'étranger) ← vérification des conditions par le juge ← jugement définitif de kafala ← transmission à l'officier de l'état civil pour mention en marge de l'acte de naissance de l'enfant","Kafala notariée (entre proches) : les parents se présentent chez le notaire ← vérification des conditions ← rédaction d'un acte de kafala notarié"]},
+    avantages:{ar:["استفادة الطفل المكفول من نفس المزايا الاجتماعية للطفل الشرعي (منح عائلية ومدرسية)","تسيير الكافل لأملاك الطفل الناتجة عن إرث أو هبة لصالحه","يمكن للكافل أن يوصي/يهب حتى ثلث أملاكه لصالح الطفل المكفول"],
+      fr:["L'enfant kafil bénéficie des mêmes avantages sociaux que l'enfant légitime (allocations familiales et scolaires)","Le kafil gère les biens de l'enfant issus d'un héritage ou d'une donation en sa faveur","Le kafil peut léguer/faire don jusqu'au tiers de ses biens en faveur de l'enfant kafil"]},
+    notes:{ar:"انتهاء الكفالة: ببلوغ الطفل 19 سنة تلقائياً، أو برغبة أحد الوالدين في الاسترجاع (يختار الطفل بنفسه إن بلغ التمييز، وإلا يقرر قاضي شؤون الأسرة)، أو بتنازل الكافل (دعوى تخلٍّ أمام الجهة المانحة)، أو بوفاة الكافل (انتقال للزوج/الورثة، وفي حال الرفض ومجهولية النسب يُسند القاضي الحضانة لمؤسسة مختصة).",
+      fr:"Fin de la kafala : à la majorité de l'enfant (19 ans) automatiquement, ou à la demande de reprise d'un parent (l'enfant choisit lui-même s'il a atteint l'âge de discernement, sinon la décision revient au juge des affaires familiales), ou par renonciation du kafil (action en abandon de kafala devant l'instance qui l'a accordée), ou par décès du kafil (transfert au conjoint/héritiers ; en cas de refus et de filiation inconnue, le juge confie la garde à un établissement compétent)."},
+  },
+  { id:"fea", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"مؤسسة الطفولة المساعدة (FEA)",fr:"Foyer pour Enfants Assistés (FEA)"},
+    legalBasis:{ar:"المرسوم التنفيذي رقم 12-04 المؤرخ في 4 يناير 2012",fr:"Décret exécutif n° 12-04 du 4 janvier 2012"},
+    description:{ar:"موجهة للأيتام، الأطفال المتخلى عنهم، الأطفال بدون سند عائلي، من الولادة إلى 18 سنة كاملة.",fr:"Destiné aux orphelins, aux enfants abandonnés, aux enfants sans soutien familial, de la naissance jusqu'à 18 ans révolus."},
+    conditions:{ar:["الطفل محروم من عائلة أو متخلى عنه، بدون حل فوري للوضع العائلي"], fr:["L'enfant est privé de famille ou abandonné, sans solution familiale immédiate"]},
+    procedure:{ar:["الإبلاغ لدى DAS أو قرار قضائي (قاضي الأحداث)","القبول بقرار إداري (DAS) أو قرار قضائي","متابعة طبية ونفسية-عاطفية واجتماعية أثناء الإقامة","البحث النشط عن حل الإيداع العائلي (الكفالة) بالتوازي"],
+      fr:["Signalement auprès de la DAS ou décision judiciaire (juge des mineurs)","Admission par décision administrative (DAS) ou décision judiciaire","Suivi médical, psychoaffectif et social durant le séjour","Recherche active en parallèle d'une solution de placement familial (kafala)"]},
+    notes:{ar:"يمكن أن تستمر المرافقة إلى ما بعد 18 سنة عند الحاجة، لضمان الإدماج الاجتماعي والمهني.",fr:"L'accompagnement peut se prolonger au-delà de 18 ans en cas de besoin, afin de garantir l'insertion sociale et professionnelle."},
+  },
+  { id:"centres-specialises", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"المراكز المتخصصة لحماية الطفولة (CSP / CSR / CPSJ)",fr:"Centres spécialisés de protection de l'enfance (CSP / CSR / CPSJ)"},
+    legalBasis:{ar:"المرسوم التنفيذي رقم 12-165 المؤرخ في 5 أفريل 2012 — المواد 116-127 من القانون 15-12",fr:"Décret exécutif n° 12-165 du 5 avril 2012 — Articles 116 à 127 de la loi 15-12"},
+    table:{ar:[{a:"المركز المتخصص للحماية (CSP)",b:"قصّر في خطر معنوي",c:"من 6 إلى 13/14 سنة"},{a:"المركز المتخصص لإعادة التربية (CSR)",b:"قصّر في نزاع مع القانون",c:"من 13/14 إلى 18 سنة"},{a:"المركز المتعدد لحماية الشباب (CPSJ)",b:"الفئتان معاً",c:"من 6 إلى 18 سنة"}],
+      fr:[{a:"Centre Spécialisé de Protection (CSP)",b:"Mineur en danger moral",c:"De 6 à 13/14 ans"},{a:"Centre Spécialisé de Rééducation (CSR)",b:"Mineur en conflit avec la loi",c:"De 13/14 à 18 ans"},{a:"Centre Polyvalent de Sauvegarde de la Jeunesse (CPSJ)",b:"Les deux catégories",c:"De 6 à 18 ans"}]},
+    procedure:{ar:["قاضي الأحداث أو جهات قضاء الأحداث هو الجهة الوحيدة المخوَّلة بالأمر بالإيداع","في حالة الاستعجال: يمكن للوالي إيداع طفل في خطر لمدة أقصاها 8 أيام، على أن يخطر مدير المركز فوراً قاضي الأحداث"],
+      fr:["Le juge des mineurs ou les juridictions pour mineurs sont les seules instances habilitées à ordonner le placement","En cas d'urgence : le wali peut placer un enfant en danger pour une durée maximale de 8 jours, à charge pour le directeur du centre d'aviser immédiatement le juge des mineurs"]},
+    avantages:{ar:["خروج لمدة 3 أيام بطلب من الممثل الشرعي وبموافقة القاضي","عطلة سنوية أقصاها 45 يوماً بالعائلة بعد موافقة لجنة العمل التربوي","إمكانية التمدرس أو التكوين خارج المركز تحت رقابة SMO بعقد تمهين مكتوب"],
+      fr:["Sortie de 3 jours sur demande du représentant légal et avec l'accord du juge","Congé annuel de 45 jours maximum en famille après accord de la commission de travail éducatif","Possibilité de scolarisation ou de formation hors du centre sous le contrôle du SMO, avec contrat d'apprentissage écrit"]},
+    notes:{ar:"قبل شهر من انتهاء التدبير، يوجّه مدير المركز للقاضي تقريراً مفصلاً حول متابعة الوضع.",fr:"Un mois avant la fin de la mesure, le directeur du centre adresse au juge un rapport détaillé sur le suivi de la situation."},
+  },
+  { id:"cpp", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"المركز النفسي-البيداغوجي (CPP)",fr:"Centre Psycho-Pédagogique (CPP)"},
+    description:{ar:"موجه للأطفال (6-14 سنة تقريباً) الذين يعانون من اضطرابات سلوكية أو صعوبات تعلّم أو سوء تكيّف مدرسي.",fr:"Destiné aux enfants (environ 6-14 ans) présentant des troubles du comportement, des difficultés d'apprentissage ou une inadaptation scolaire."},
+    procedure:{ar:["التوجيه من طرف المدرسة أو الطبيب أو المصلحة الاجتماعية أو العائلة","تقييم نفسي-بيداغوجي مسبق","تكفل تربوي وتقويمي، بنظام خارجي أو نصف داخلي حسب المركز"],
+      fr:["Orientation par l'école, le médecin, le service social ou la famille","Évaluation psycho-pédagogique préalable","Prise en charge éducative et correctrice, en externat ou semi-internat selon le centre"]},
+  },
+  { id:"placement-familial", group:{ar:"الطفولة في خطر",fr:"Enfance en danger"},
+    name:{ar:"الكفالة العائلية المأجورة (الحضانة العائلية المدفوعة)",fr:"Kafala familiale rémunérée (placement familial rétribué)"},
+    description:{ar:"موجهة للأطفال في وضعية خطر يحتاجون إبعاداً مؤقتاً عن محيطهم الأصلي.",fr:"Destiné aux enfants en situation de danger nécessitant un éloignement provisoire de leur milieu d'origine."},
+    conditions:{ar:["اعتماد مسبق للعائلة الحاضنة","تحقيق اجتماعي إيجابي حول العائلة الحاضنة"], fr:["Agrément préalable de la famille d'accueil","Enquête sociale favorable concernant la famille d'accueil"]},
+    procedure:{ar:["إيداع طلب اعتماد لدى DAS من طرف العائلة المترشحة","تحقيق اجتماعي للتحقق","قرار الاعتماد","إيداع الطفل مع متابعة اجتماعية منتظمة"],
+      fr:["Dépôt d'une demande d'agrément auprès de la DAS par la famille candidate","Enquête sociale de vérification","Décision d'agrément","Placement de l'enfant avec suivi social régulier"]},
+  },
+  { id:"enfant-delinquant", group:{ar:"الطفل الجانح",fr:"Enfant délinquant"},
+    name:{ar:"الطفل في نزاع مع القانون — الأعمار والضمانات",fr:"L'enfant en conflit avec la loi — Âges et garanties"},
+    description:{ar:"الطفل الجانح هو من يرتكب فعلاً مجرَّماً وعمره 10 سنوات على الأقل وقت ارتكاب المخالفة (المادة 2).",fr:"L'enfant délinquant est celui qui commet un fait qualifié crime ou délit et qui est âgé d'au moins 10 ans au moment des faits (Article 2)."},
+    table:{ar:[{a:"أقل من 10 سنوات",b:"لا متابعة جزائية ممكنة (المادة 56)",c:"المسؤولية المدنية على الممثل الشرعي"},{a:"10 إلى أقل من 13 سنة",b:"تدابير حماية/إعادة تربية فقط، أبداً عقوبة (المادة 57)",c:"لا حراسة نظرية، لا إيداع عقابي"},{a:"13 إلى أقل من 16 سنة",b:"حراسة نظرية ممكنة بشروط صارمة",c:"حبس مؤقت استثنائي حسب الخطورة (المادة 73)"},{a:"16 إلى أقل من 18 سنة",b:"نظام وسطي، محامٍ إلزامي",c:"حبس مؤقت محدود بشهرين قابل للتجديد مرة (المادة 73)"}],
+      fr:[{a:"Moins de 10 ans",b:"Aucune poursuite pénale possible (Art. 56)",c:"La responsabilité civile incombe au représentant légal"},{a:"De 10 à moins de 13 ans",b:"Mesures de protection/rééducation uniquement, jamais de peine (Art. 57)",c:"Pas de garde à vue, pas de placement pénitentiaire"},{a:"De 13 à moins de 16 ans",b:"Garde à vue possible sous conditions strictes",c:"Détention provisoire exceptionnelle selon la gravité (Art. 73)"},{a:"De 16 à moins de 18 ans",b:"Régime intermédiaire, avocat obligatoire",c:"Détention provisoire limitée à deux mois renouvelable une fois (Art. 73)"}]},
+    conditions:{ar:["حضور المحامي إلزامي في كل المراحل (حراسة نظرية، تحقيق، حكم) — تعيين تلقائي عند الحاجة","فحص طبي إلزامي في بداية ونهاية الحراسة النظرية","تحقيق اجتماعي إلزامي للجنايات والجنح (اختياري للمخالفات)","مرافعات مغلقة أمام قسم الأحداث؛ الحكم بجلسة علنية"],
+      fr:["Assistance obligatoire d'un avocat à toutes les étapes (garde à vue, instruction, jugement) — commis d'office en cas de besoin","Examen médical obligatoire au début et à la fin de la garde à vue","Enquête sociale obligatoire pour les crimes et délits (facultative pour les contraventions)","Débats à huis clos devant la chambre des mineurs ; jugement rendu en audience publique"]},
+    procedure:{ar:["الوساطة: ممكنة فقط للجنح والمخالفات (أبداً للجنايات)، يجب أن تتم قبل تحريك الدعوى العمومية، باتفاق بين الطفل الجانح/ممثله والضحية، هدفها إنهاء المتابعة مقابل جبر الضرر","التدابير الممكنة: التسليم لممثله الشرعي أو شخص/عائلة موثوقة، الإيداع بمؤسسة معتمدة أو داخلية، الإيداع بمركز CSR، أو الوضع تحت الحرية المراقبة عبر SMO"],
+      fr:["Médiation : possible uniquement pour les délits et contraventions (jamais pour les crimes), doit intervenir avant la mise en mouvement de l'action publique, accord entre l'enfant délinquant/son représentant et la victime, dans le but de mettre fin aux poursuites en contrepartie d'une réparation","Mesures possibles : remise au représentant légal ou à une personne/famille de confiance, placement dans un établissement agréé ou un internat, placement dans un centre CSR, ou mise sous liberté surveillée exécutée par le SMO"]},
+    notes:{ar:"عند بلوغ الرشد الجزائي: تُمحى العقوبات المنفذة والتدابير المسجلة بصفة تلقائية من صحيفة السوابق القضائية (المادة 109).",fr:"À la majorité pénale : les peines exécutées et les mesures inscrites sont automatiquement effacées du casier judiciaire (Article 109)."},
+  },
+  { id:"depistage-toxicomanie", group:{ar:"الطفل الجانح",fr:"Enfant délinquant"},
+    name:{ar:"الكشف المبكر عن الإدمان بالوسط المدرسي",fr:"Dépistage précoce de la toxicomanie en milieu scolaire"},
+    legalBasis:{ar:"القانون رقم 04-18، المواد 5 مكرر 10، 5 مكرر 11، 5 مكرر 12، والمادة 22 المعدَّلة",fr:"Loi n° 04-18, articles 5 bis 10, 5 bis 11, 5 bis 12, et article 22 modifié"},
+    description:{ar:"موجه لتلاميذ الطورين المتوسط والثانوي، متربصي التكوين المهني، وطلبة التعليم العالي (يُستثنى الطور الابتدائي إلا في حالة استثنائية).",fr:"Destiné aux élèves des cycles moyen et secondaire, aux stagiaires de la formation professionnelle et aux étudiants de l'enseignement supérieur (le cycle primaire est exclu sauf cas exceptionnel)."},
+    procedure:{ar:["موافقة مسبقة من الممثل الشرعي مطلوبة للقاصر","عند الرفض، وإذا اقتضت المصلحة الفضلى للطفل ذلك، يمكن لقاضي الأحداث الأمر بإجراء التحاليل","إذا كانت النتيجة إيجابية: لا متابعة قضائية","التوجيه نحو المصالح الصحية المتخصصة للتكفل الطبي والعلاجي","ضمان سرية النتائج والحق في متابعة التمدرس"],
+      fr:["Consentement préalable du représentant légal requis pour le mineur","En cas de refus, et si l'intérêt supérieur de l'enfant l'exige, le juge des mineurs peut ordonner la réalisation des analyses","Si le résultat est positif : aucune poursuite judiciaire","Orientation vers les services de santé spécialisés pour la prise en charge médicale et thérapeutique","Garantie de la confidentialité des résultats et du droit à la poursuite de la scolarité"]},
+    notes:{ar:"عقوبة مشدّدة: تصل العقوبة إلى السجن المؤبد إذا ارتُكبت المخالفات داخل أو بمحاذاة مؤسسات التربية والتعليم والتكوين أو المؤسسات الصحية والاجتماعية (المادة 22 المعدلة).",fr:"Peine aggravée : la peine peut aller jusqu'à la réclusion perpétuelle si les infractions sont commises à l'intérieur ou à proximité des établissements d'éducation, d'enseignement, de formation, ou des établissements sanitaires et sociaux (Article 22 modifié)."},
+  },
+  { id:"assistance-judiciaire", group:{ar:"أخرى",fr:"Autres"},
+    name:{ar:"المساعدة القضائية والتحقيق الاجتماعي بالمحكمة",fr:"Assistance judiciaire et enquête sociale auprès du tribunal"},
+    legalBasis:{ar:"القانون رقم 09-02 المتعلق بالمساعدة القضائية",fr:"Loi n° 09-02 relative à l'assistance judiciaire"},
+    description:{ar:"تُمنح المساعدة القضائية لكل شخص لا تسمح له موارده بالدفاع عن حقوقه أمام القضاء (المادة 1).",fr:"L'assistance judiciaire est accordée à toute personne dont les ressources ne lui permettent pas de faire valoir ses droits en justice (Article 1)."},
+    conditions:{ar:["موارد غير كافية للدفاع عن الحقوق أمام القضاء","تُراعى الوضعية الاجتماعية والعائلية عند التقييم"], fr:["Ressources insuffisantes pour faire valoir ses droits en justice","La situation sociale et familiale est prise en compte lors de l'évaluation (Article 6)"]},
+    procedure:{ar:["إيداع طلب لدى مكتب المساعدة القضائية بالمحكمة المختصة","تقييم الوضعية الاجتماعية والعائلية لمقدم الطلب","قرار المنح أو الرفض"],
+      fr:["Dépôt d'une demande auprès du bureau d'assistance judiciaire du tribunal compétent","Évaluation de la situation sociale et familiale du demandeur","Décision d'octroi ou de rejet"]},
+    notes:{ar:"التحقيق الاجتماعي بطلب من قاضي الأحداث (المادة 26 من القانون 15-12): يستدعي القاضي المساعد الاجتماعي لتقييم الوسط العائلي والظروف المادية والقدرة التربوية للوالدين، ويُدرَج التقرير بالملف ليُنير قرار القاضي.",
+      fr:"Enquête sociale sur demande du juge des mineurs (Article 26 de la loi 15-12) : le juge convoque l'assistant social pour évaluer le milieu familial, les conditions matérielles et la capacité éducative des parents. Le rapport d'enquête est versé au dossier et éclaire la décision du juge."},
+  },
+  { id:"sanctions-penales", group:{ar:"أخرى",fr:"Autres"},
+    name:{ar:"الجدول العقابي — مخالفات متعلقة بحماية الطفولة",fr:"Tableau répressif — Infractions relatives à la protection de l'enfance"},
+    legalBasis:{ar:"القانون 15-12 — الباب الخامس",fr:"Loi 15-12 — Titre V"},
+    description:{ar:"جدول مرجعي بأهم الجرائم المرتبطة بحماية الطفولة والعقوبات المقررة لها — مفيد لتوعية الأسر والمتدخلين بحدود المسؤولية القانونية.",fr:"Tableau de référence des principales infractions liées à la protection de l'enfance et des peines encourues — utile pour informer les familles et les intervenants des limites de la responsabilité légale."},
+    table:{ar:[{a:"المادة 133",b:"عرقلة عمل المندوب الوطني أو SMO",c:"غرامة 30.000 إلى 60.000 دج (العود: 2-6 أشهر + غرامة 60.000-120.000 دج)"},{a:"المادة 134",b:"كشف هوية المبلِّغ دون موافقته",c:"1 إلى 6 أشهر حبساً و/أو غرامة 50.000-150.000 دج"},{a:"المادة 135",b:"إفشاء معلومات مشمولة بالسر المهني",c:"1 إلى 6 أشهر حبساً و/أو غرامة 50.000-150.000 دج"},{a:"المادة 136",b:"نشر تسجيل سماع طفل ضحية اعتداء جنسي",c:"1 إلى 3 سنوات حبساً وغرامة 25.000-50.000 دج"},{a:"المادة 137",b:"نشر مداولات جهات قضاء الأحداث",c:"6 أشهر إلى سنتين حبساً و/أو غرامة 10.000-200.000 دج"},{a:"المادة 138",b:"عدم دفع النفقة المقررة عمداً",c:"6 أشهر إلى 3 سنوات حبساً وغرامة 50.000-100.000 دج"},{a:"المادة 139",b:"الاستغلال الاقتصادي لطفل",c:"1 إلى 3 سنوات حبساً وغرامة 50.000-100.000 دج (تُضاعف إن كان الفاعل أصلاً أو مسؤولاً)"},{a:"المادة 140",b:"المساس بالحياة الخاصة للطفل",c:"1 إلى 3 سنوات حبساً وغرامة 150.000-300.000 دج"},{a:"المادة 141",b:"الاستغلال عبر وسيلة اتصال",c:"1 إلى 3 سنوات حبساً وغرامة 150.000-300.000 دج"},{a:"المادة 143",b:"الاستغلال الجنسي، الإباحية، الاتجار، التسول، الاختطاف",c:"عقوبات قانون العقوبات"}],
+      fr:[{a:"Article 133",b:"Entrave à l'action du Délégué national ou du SMO",c:"Amende de 30 000 à 60 000 DA (récidive : 2-6 mois + amende de 60 000-120 000 DA)"},{a:"Article 134",b:"Révélation de l'identité du signalant sans son consentement",c:"1 à 6 mois d'emprisonnement et/ou amende de 50 000-150 000 DA"},{a:"Article 135",b:"Divulgation d'informations couvertes par le secret professionnel",c:"1 à 6 mois d'emprisonnement et/ou amende de 50 000-150 000 DA"},{a:"Article 136",b:"Diffusion de l'enregistrement de l'audition d'un enfant victime d'agression sexuelle",c:"1 à 3 ans d'emprisonnement et amende de 25 000-50 000 DA"},{a:"Article 137",b:"Publication des délibérations des juridictions pour mineurs",c:"6 mois à 2 ans d'emprisonnement et/ou amende de 10 000-200 000 DA"},{a:"Article 138",b:"Non-paiement intentionnel de la pension alimentaire fixée",c:"6 mois à 3 ans d'emprisonnement et amende de 50 000-100 000 DA"},{a:"Article 139",b:"Exploitation économique d'un enfant",c:"1 à 3 ans d'emprisonnement et amende de 50 000-100 000 DA (doublée si l'auteur est un ascendant ou un responsable)"},{a:"Article 140",b:"Atteinte à la vie privée de l'enfant",c:"1 à 3 ans d'emprisonnement et amende de 150 000-300 000 DA"},{a:"Article 141",b:"Exploitation via un moyen de communication",c:"1 à 3 ans d'emprisonnement et amende de 150 000-300 000 DA"},{a:"Article 143",b:"Exploitation sexuelle, pornographie, traite, mendicité, enlèvement",c:"Peines du code pénal"}]},
+  },
+];
+
+const CATEGORY_META = {
+  agees: { key:"agees", label:{ar:"الأشخاص المسنون",fr:"Personnes âgées"}, subtitle:{ar:"القانون رقم 10-12 وملحقاته",fr:"Loi n° 10-12 et ses textes d'application"},
+    accent:"#0f766e", accentSoft:"#e8f3f1", data:AGEES, rights:RIGHTS_AGEES, legalFramework:LEGAL_FRAMEWORK_AGEES, iconType:"users" },
+  enfance: { key:"enfance", label:{ar:"الطفولة",fr:"Enfance"}, subtitle:{ar:"القانون رقم 15-12 وملحقاته",fr:"Loi n° 15-12 et ses textes d'application"},
+    accent:"#0e7490", accentSoft:"#e6f2f4", data:ENFANCE, definitions:DEFINITIONS_ENFANCE, legalFramework:LEGAL_FRAMEWORK_ENFANCE, dangerSituations:DANGER_SITUATIONS, iconType:"baby" },
+};
+
+/* ============================= ICONS ============================= */
+const ICONS = {
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  clear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+  arrowright:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  scale:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l-3 6a4 4 0 0 0 6 0zM19 8l-3 6a4 4 0 0 0 6 0zM7 6h10M5 8h4M15 8h4"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 6h.01M9 10h.01M9 14h.01M15 6h.01M15 10h.01M15 14h.01"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  baby:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h.01M15 12h.01M10 16c.5.5 1.3 1 2 1s1.5-.5 2-1M8 21c0-2.5 1.5-4 4-4s4 1.5 4 4"/><circle cx="12" cy="10" r="8"/><path d="M12 2a2 2 0 0 0-2 2c0 1 .5 1.5 1 2"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/></svg>',
+};
+function icon(name){ return '<span class="icon">'+ICONS[name]+'</span>'; }
+
+/* ============================= STATE ============================= */
+let state = { view:"home", lang:"fr", catKey:null, itemId:null, query:"", group:null, tab:"programs",
+  editMode:false, addMode:false, loaded:false };
+
+let overridesStore = {};   // key: catKey+':'+id -> {ar:{field:val}, fr:{field:val}}
+let customItemsStore = { agees:[], enfance:[] };
+
+function setState(patch){ Object.assign(state, patch); render(); window.scrollTo(0,0); }
+function T(){ return STRINGS[state.lang]; }
+function L(field){ if(!field) return ""; return field[state.lang] || field.ar || field.fr || ""; }
+
+/* ============================= STORAGE ============================= */
+async function loadStorage(){
+  try{
+    const list = await window.storage.list('override:', false);
+    if(list && list.keys){
+      for(const k of list.keys){
+        try{
+          const res = await window.storage.get(k, false);
+          if(res){
+            const rest = k.slice('override:'.length);
+            const sep = rest.indexOf(':');
+            const catKey = rest.slice(0,sep), id = rest.slice(sep+1);
+            overridesStore[catKey+':'+id] = JSON.parse(res.value);
+          }
+        }catch(e){}
+      }
+    }
+  }catch(e){ /* first run: no overrides yet */ }
+
+  for(const catKey of Object.keys(CATEGORY_META)){
+    try{
+      const res = await window.storage.get('customlist:'+catKey, false);
+      if(res) customItemsStore[catKey] = JSON.parse(res.value);
+    }catch(e){ customItemsStore[catKey] = customItemsStore[catKey] || []; }
+  }
+}
+
+async function saveOverride(catKey, id, lang, fields){
+  const key = 'override:'+catKey+':'+id;
+  const existing = overridesStore[catKey+':'+id] || {};
+  existing[lang] = Object.assign({}, existing[lang]||{}, fields);
+  overridesStore[catKey+':'+id] = existing;
+  try{ await window.storage.set(key, JSON.stringify(existing), false); }catch(e){ console.error('save failed', e); }
+}
+
+async function saveCustomList(catKey){
+  try{ await window.storage.set('customlist:'+catKey, JSON.stringify(customItemsStore[catKey]), false); }catch(e){ console.error('save failed', e); }
+}
+
+/* ============================= DATA HELPERS ============================= */
+function getItems(catKey){
+  const base = CATEGORY_META[catKey].data.map(it=>applyOverride(it, catKey));
+  const custom = (customItemsStore[catKey]||[]).map(it=>applyOverride(it, catKey, true));
+  return base.concat(custom);
+}
+function applyOverride(item, catKey, isCustom){
+  const ov = overridesStore[catKey+':'+item.id];
+  const merged = JSON.parse(JSON.stringify(item));
+  if(ov){
+    for(const lang of ['ar','fr']){
+      if(ov[lang]){
+        for(const field of Object.keys(ov[lang])){
+          if(!merged[field] || typeof merged[field] !== 'object') merged[field] = {};
+          merged[field][lang] = ov[lang][field];
+        }
+      }
+    }
+    merged._edited = true;
+  }
+  merged._custom = !!isCustom;
+  return merged;
+}
+function getAllItemsFlat(){
+  const arr = [];
+  Object.keys(CATEGORY_META).forEach(catKey=>{
+    getItems(catKey).forEach(it=> arr.push(Object.assign({catKey}, it)));
+  });
+  return arr;
+}
+function findItem(catKey, id){
+  return getItems(catKey).find(it=>it.id===id);
+}
+
+/* ============================= RENDER HELPERS ============================= */
+function esc(s){ return (s+"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function bulletsHTML(arr){ return '<ul class="bullets">'+arr.map(it=>'<li>'+esc(it)+'</li>').join('')+'</ul>'; }
+function stepsHTML(arr, accent){ return '<ol class="steps">'+arr.map((it,i)=>'<li><span class="step-num" style="background:'+accent+'">'+(i+1)+'</span><span>'+esc(it)+'</span></li>').join('')+'</ol>'; }
+function miniTableHTML(rows, accent){ return '<div class="mini-table">'+rows.map(r=>'<div class="mini-row" style="background:'+accent+'0d"><div class="mini-a">'+esc(r.a)+'</div><div class="mini-b">'+esc(r.b)+'</div>'+(r.c?'<div class="mini-c">'+esc(r.c)+'</div>':'')+'</div>').join('')+'</div>'; }
+function sectionHTML(iconName, title, accent, inner){
+  return '<div class="section"><div class="section-head"><div class="section-icon" style="background:'+accent+'1a;color:'+accent+'">'+icon(iconName)+'</div><div class="section-title">'+esc(title)+'</div></div>'+inner+'</div>';
+}
+function dispCardHTML(item, catKey, accent){
+  return '<button class="disp-card" data-action="open-item" data-cat="'+catKey+'" data-id="'+item.id+'">'+
+    '<div style="flex:1">'+
+      '<div class="disp-group" style="color:'+accent+'">'+esc(L(item.group))+(item._edited||item._custom?'<span class="edited-dot"></span>':'')+'</div>'+
+      '<div class="disp-name">'+esc(L(item.name))+'</div>'+
+      (item.description?'<div class="disp-desc">'+esc(L(item.description))+'</div>':'')+
+    '</div>'+
+    '<span class="disp-chevron flip">'+ICONS.chevron+'</span>'+
+  '</button>';
+}
+function langBtnHTML(){
+  const t = T();
+  return '<button class="langbtn" data-action="toggle-lang">'+icon('globe')+'<span>'+t.langToggle+'</span></button>';
+}
+
+/* ============================= SCREENS ============================= */
+function renderHome(){
+  const t = T();
+  const q = state.query.trim().toLowerCase();
+  let resultsHTML = "";
+  if(q){
+    const results = getAllItemsFlat().filter(it=>{
+      const hay = [L(it.name), L(it.description)||"", L(it.group), ...(it.conditions?it.conditions[state.lang]||[]:[]), ...(it.procedure?it.procedure[state.lang]||[]:[])].join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+    resultsHTML = '<div class="results-count">'+t.resultsCount(results.length)+'</div>' +
+      (results.length===0 ? '<div class="no-results">'+t.noResults+'</div>' :
+        results.map(r=>dispCardHTML(r, r.catKey, CATEGORY_META[r.catKey].accent)).join(''));
+  } else {
+    resultsHTML = Object.values(CATEGORY_META).map(cat=>
+      '<button class="cat-card" data-action="open-cat" data-cat="'+cat.key+'" style="background:linear-gradient(135deg,'+cat.accent+','+cat.accent+'cc)">'+
+        '<div class="cat-icon-wrap">'+icon(cat.iconType)+'</div>'+
+        '<div style="flex:1">'+
+          '<div class="cat-title">'+esc(L(cat.label))+'</div>'+
+          '<div class="cat-sub">'+esc(L(cat.subtitle))+'</div>'+
+          '<div class="cat-count">'+t.programsCount(getItems(cat.key).length)+'</div>'+
+        '</div>'+
+        '<span class="cat-chevron flip">'+ICONS.chevron+'</span>'+
+      '</button>'
+    ).join('');
+  }
+
+  return '<div class="home-wrap">'+
+    '<div class="toprow"><div class="eyebrow">'+t.appEyebrow+'</div>'+langBtnHTML()+'</div>'+
+    '<h1>'+t.homeTitle+'</h1>'+
+    '<p class="lead">'+t.homeLead+'</p>'+
+    '<div class="searchbox">'+
+      '<span class="icon-search">'+ICONS.search+'</span>'+
+      '<input id="search-input" type="text" placeholder="'+esc(t.searchPlaceholder)+'" value="'+esc(state.query)+'"/>'+
+      '<button class="icon-clear" data-action="clear-search">'+ICONS.clear+'</button>'+
+    '</div>'+
+    resultsHTML+
+  '</div>';
+}
+
+function renderCategory(){
+  const t = T();
+  const cat = CATEGORY_META[state.catKey];
+  const items = getItems(cat.key);
+  const groups = [t.groupAll, ...Array.from(new Set(items.map(d=>L(d.group))))];
+  const activeGroup = state.group || t.groupAll;
+  const filtered = activeGroup===t.groupAll ? items : items.filter(d=>L(d.group)===activeGroup);
+
+  let body = "";
+  if(state.tab==="programs"){
+    const chipsHTML = groups.map(g=>
+      '<button class="chip'+(activeGroup===g?' active':'')+'" data-action="set-group" data-group="'+esc(g)+'" style="'+(activeGroup===g?'background:'+cat.accent+';border-color:'+cat.accent:'')+'">'+esc(g)+'</button>'
+    ).join('');
+    body = '<div class="chips">'+chipsHTML+'</div>' + filtered.map(item=>dispCardHTML(item, cat.key, cat.accent)).join('');
+  } else {
+    let fw = "";
+    if(cat.legalFramework){
+      fw += '<div class="fw-block"><div class="fw-block-title">'+t.legalTextsTitle+'</div>' +
+        cat.legalFramework.map(l=>'<div class="fw-item"><div class="term" style="color:'+cat.accent+'">'+esc(L(l.law))+'</div><div class="text">'+esc(L(l.text))+'</div></div>').join('') + '</div>';
+    }
+    if(cat.definitions){
+      fw += '<div class="fw-block"><div class="fw-block-title">'+t.definitionsTitle+'</div>' +
+        cat.definitions.map(d=>'<div class="fw-item"><div class="term" style="color:'+cat.accent+'">'+esc(L(d.term))+'</div><div class="text">'+esc(L(d.text))+'</div></div>').join('') + '</div>';
+    }
+    if(cat.rights){
+      fw += '<div class="fw-block"><div class="fw-block-title">'+t.rightsTitle+'</div>' +
+        cat.rights.map(r=>'<div class="fw-item"><div class="term" style="color:'+cat.accent+'">'+esc(L(r.art))+'</div><div class="text">'+esc(L(r.text))+'</div></div>').join('') + '</div>';
+    }
+    if(cat.dangerSituations){
+      fw += '<div class="fw-block"><div class="fw-block-title">'+t.dangerTitle+'</div>' + bulletsHTML(cat.dangerSituations[state.lang]) + '</div>';
+    }
+    body = fw;
+  }
+
+  return '<div>'+
+    '<div class="topbar">'+
+      '<div class="toprow"><button class="backbtn" data-action="go-home" style="color:'+cat.accent+'">'+ICONS.arrowright+' '+t.home+'</button>'+langBtnHTML()+'</div>'+
+      '<div class="cat-header">'+
+        '<div class="cat-header-icon" style="background:'+cat.accentSoft+';color:'+cat.accent+'">'+icon(cat.iconType)+'</div>'+
+        '<div><h1>'+esc(L(cat.label))+'</h1><div class="sub">'+esc(L(cat.subtitle))+'</div></div>'+
+      '</div>'+
+      '<div class="tabs">'+
+        '<button class="tab'+(state.tab==="programs"?' active':'')+'" data-action="set-tab" data-tab="programs" style="'+(state.tab==="programs"?'background:'+cat.accent:'')+'">'+t.tabPrograms+'</button>'+
+        '<button class="tab'+(state.tab==="legal"?' active':'')+'" data-action="set-tab" data-tab="legal" style="'+(state.tab==="legal"?'background:'+cat.accent:'')+'">'+t.tabLegal+'</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="body-pad">'+body+'</div>'+
+    '<button class="fab" data-action="open-add" style="background:'+cat.accent+'" title="'+esc(t.addNew)+'">'+icon('plus')+'</button>'+
+  '</div>';
+}
+
+function renderDetail(){
+  const t = T();
+  const cat = CATEGORY_META[state.catKey];
+  const item = findItem(cat.key, state.itemId);
+  if(!item) return "";
+
+  if(state.editMode) return renderForm(cat, item);
+
+  let html = '<div>'+
+    '<div class="topbar">'+
+      '<div class="toprow"><button class="backbtn" data-action="go-category" style="color:'+cat.accent+'">'+ICONS.arrowright+' '+esc(L(cat.label))+'</button>'+langBtnHTML()+'</div>'+
+      '<div class="detail-eyebrow" style="color:'+cat.accent+'">'+esc(L(item.group))+
+        (item._edited?'<span style="background:'+cat.accent+'1a;color:'+cat.accent+';border-radius:6px;padding:2px 8px;font-size:11px">'+t.editedBadge+'</span>':'')+
+        (item._custom?'<span style="background:'+cat.accent+'1a;color:'+cat.accent+';border-radius:6px;padding:2px 8px;font-size:11px">'+t.customBadge+'</span>':'')+
+      '</div>'+
+      '<h1 class="detail-title">'+esc(L(item.name))+'</h1>'+
+      (item.legalBasis? '<div class="detail-legal">'+icon('scale')+'<span>'+esc(L(item.legalBasis))+'</span></div>':'')+
+      '<div class="detail-actions">'+
+        '<button class="action-btn" data-action="open-edit">'+icon('edit')+t.edit+'</button>'+
+        (item._custom?'<button class="action-btn danger" data-action="delete-item">'+icon('trash')+t.delete+'</button>':'')+
+      '</div>'+
+    '</div>'+
+    '<div class="body-pad">';
+
+  if(item.description){ html += '<div class="desc-box" style="background:'+cat.accentSoft+'">'+esc(L(item.description))+'</div>'; }
+  if(item.notes){ html += '<div class="notes-box">'+esc(L(item.notes))+'</div>'; }
+  if(item.table){ html += sectionHTML('list', t.table, cat.accent, miniTableHTML(item.table[state.lang]||item.table.ar, cat.accent)); }
+  if(item.amounts){
+    const inner = '<div>' + (item.amounts[state.lang]||item.amounts.ar).map(a=>
+      '<div class="amount-box" style="background:'+cat.accentSoft+'"><div class="amount-value" style="color:'+cat.accent+'">'+esc(a.value)+'</div><div class="amount-who">'+esc(a.who)+'</div></div>'
+    ).join('') + '</div>';
+    html += sectionHTML('list', t.amounts, cat.accent, inner);
+  }
+  if(item.who){ html += sectionHTML('users', t.who, cat.accent, bulletsHTML(item.who[state.lang]||item.who.ar)); }
+  if(item.missions){ html += sectionHTML('list', t.missions, cat.accent, bulletsHTML(item.missions[state.lang]||item.missions.ar)); }
+  if(item.conditions){ html += sectionHTML('list', t.conditions, cat.accent, bulletsHTML(item.conditions[state.lang]||item.conditions.ar)); }
+  if(item.documents){ html += sectionHTML('file', t.documents, cat.accent, bulletsHTML(item.documents[state.lang]||item.documents.ar)); }
+  if(item.procedure){ html += sectionHTML('list', t.procedure, cat.accent, stepsHTML(item.procedure[state.lang]||item.procedure.ar, cat.accent)); }
+  if(item.avantages){ html += sectionHTML('list', t.avantages, cat.accent, bulletsHTML(item.avantages[state.lang]||item.avantages.ar)); }
+  if(item.institutions){ html += sectionHTML('building', t.institutions, cat.accent, bulletsHTML(item.institutions[state.lang]||item.institutions.ar)); }
+
+  html += '</div></div>';
+  return html;
+}
+
+/* --------------------------- EDIT / ADD FORM --------------------------- */
+const LIST_FIELDS = ["conditions","documents","procedure","institutions","missions","avantages","who"];
+const TEXT_FIELDS = ["name","group","legalBasis","description","notes"];
+
+function fieldVal(item, field){
+  if(!item[field]) return "";
+  const v = item[field][state.lang];
+  if(Array.isArray(v)) return v.join("\n");
+  return v || "";
+}
+
+function renderForm(cat, item){
+  const t = T();
+  const isNew = !item;
+  const title = isNew ? t.addItemTitle : t.editItemTitle;
+
+  let fieldsHTML = "";
+  fieldsHTML += '<div class="field"><label>'+t.fieldName+'</label><input type="text" id="f-name" value="'+esc(isNew?"":fieldVal(item,"name"))+'"/></div>';
+  fieldsHTML += '<div class="field"><label>'+t.fieldGroup+'</label><input type="text" id="f-group" value="'+esc(isNew?(state.group&&state.group!==t.groupAll?state.group:""):fieldVal(item,"group"))+'"/></div>';
+  fieldsHTML += '<div class="field"><label>'+t.fieldLegalBasis+'</label><input type="text" id="f-legalBasis" value="'+esc(isNew?"":fieldVal(item,"legalBasis"))+'"/></div>';
+  fieldsHTML += '<div class="field"><label>'+t.fieldDescription+'</label><textarea id="f-description" rows="3">'+esc(isNew?"":fieldVal(item,"description"))+'</textarea></div>';
+  LIST_FIELDS.forEach(f=>{
+    if(!isNew && !item[f]) return;
+    const label = t[f] || f;
+    fieldsHTML += '<div class="field"><label>'+esc(label)+' <span class="hint">('+t.listHint+')</span></label><textarea id="f-'+f+'" rows="4">'+esc(isNew?"":fieldVal(item,f))+'</textarea></div>';
+  });
+  if(isNew){
+    ["conditions","documents","procedure","institutions"].forEach(f=>{
+      if(fieldsHTML.indexOf('id="f-'+f+'"')===-1){
+        const label = t[f] || f;
+        fieldsHTML += '<div class="field"><label>'+esc(label)+' <span class="hint">('+t.listHint+')</span></label><textarea id="f-'+f+'" rows="4"></textarea></div>';
+      }
+    });
+  }
+  fieldsHTML += '<div class="field"><label>'+t.fieldNotes+'</label><textarea id="f-notes" rows="3">'+esc(isNew?"":fieldVal(item,"notes"))+'</textarea></div>';
+
+  return '<div>'+
+    '<div class="topbar">'+
+      '<div class="toprow"><button class="backbtn" data-action="'+(isNew?'close-add':'close-edit')+'" style="color:'+cat.accent+'">'+ICONS.arrowright+' '+t.cancel+'</button>'+langBtnHTML()+'</div>'+
+      '<h1 style="font-size:18px">'+title+'</h1>'+
+    '</div>'+
+    '<div class="form-wrap">'+fieldsHTML+
+      '<div class="form-actions">'+
+        '<button class="btn-secondary" data-action="'+(isNew?'close-add':'close-edit')+'">'+t.cancel+'</button>'+
+        '<button class="btn-primary" data-action="'+(isNew?'save-add':'save-edit')+'" style="background:'+cat.accent+'">'+t.save+'</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function collectFormFields(){
+  const ids = ["name","group","legalBasis","description","notes",...LIST_FIELDS];
+  const out = {};
+  ids.forEach(f=>{
+    const el = document.getElementById('f-'+f);
+    if(!el) return;
+    const val = el.value;
+    if(LIST_FIELDS.includes(f)){
+      const arr = val.split("\n").map(s=>s.trim()).filter(Boolean);
+      if(arr.length) out[f] = arr;
+    } else {
+      if(val.trim()) out[f] = val.trim();
+    }
+  });
+  return out;
+}
+
+/* ============================= RENDER ROOT ============================= */
+function render(){
+  const t = T();
+  document.documentElement.setAttribute('dir', t.dir);
+  document.documentElement.setAttribute('lang', t.htmlLang);
+  document.body.className = state.lang==='ar' ? 'lang-ar' : 'lang-fr';
+
+  const app = document.getElementById('app');
+  if(!state.loaded){
+    app.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><div>'+t.loading+'</div></div>';
+    return;
+  }
+  let html = "";
+  if(state.view==="home") html = renderHome();
+  else if(state.view==="category") html = renderCategory();
+  else if(state.view==="detail") html = renderDetail();
+  else if(state.view==="add") html = renderForm(CATEGORY_META[state.catKey], null);
+  app.innerHTML = html;
+
+  if(state.view==="home"){
+    const input = document.getElementById('search-input');
+    if(input){
+      input.addEventListener('input', (e)=>{
+        state.query = e.target.value;
+        const pos = e.target.selectionStart;
+        render();
+        const ni = document.getElementById('search-input');
+        if(ni){ ni.focus(); ni.selectionStart = ni.selectionEnd = pos; }
+      });
+    }
+  }
+}
+
+/* ============================= EVENTS ============================= */
+document.getElementById('app').addEventListener('click', function(e){
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const action = el.getAttribute('data-action');
+
+  if(action==="open-cat"){ setState({ view:"category", catKey:el.getAttribute('data-cat'), group:null, tab:"programs" }); }
+  else if(action==="open-item"){ setState({ view:"detail", catKey:el.getAttribute('data-cat'), itemId:el.getAttribute('data-id'), editMode:false }); }
+  else if(action==="go-home"){ setState({ view:"home", query:"" }); }
+  else if(action==="go-category"){ setState({ view:"category", editMode:false }); }
+  else if(action==="set-tab"){ setState({ tab: el.getAttribute('data-tab') }); }
+  else if(action==="set-group"){ setState({ group: el.getAttribute('data-group') }); }
+  else if(action==="clear-search"){ setState({ query:"" }); }
+  else if(action==="toggle-lang"){ setState({ lang: state.lang==='fr' ? 'ar' : 'fr' }); }
+  else if(action==="open-edit"){ setState({ editMode:true }); }
+  else if(action==="close-edit"){ setState({ editMode:false }); }
+  else if(action==="open-add"){ setState({ view:"add", itemId:null, editMode:false, addMode:true }); }
+  else if(action==="close-add"){ setState({ view:"category" }); }
+  else if(action==="save-edit"){
+    const fields = collectFormFields();
+    const cat = CATEGORY_META[state.catKey];
+    saveOverride(state.catKey, state.itemId, state.lang, fields).then(()=> setState({ editMode:false }) );
+  }
+  else if(action==="save-add"){
+    const fields = collectFormFields();
+    if(!fields.name){ return; }
+    const id = "custom-"+Date.now();
+    const newItem = { id, group:{}, name:{}, legalBasis:{}, description:{}, notes:{} };
+    ["name","group","legalBasis","description","notes"].forEach(f=>{
+      newItem[f][state.lang] = fields[f] || "";
+    });
+    LIST_FIELDS.forEach(f=>{ if(fields[f]){ newItem[f] = {}; newItem[f][state.lang] = fields[f]; } });
+    const catKey = state.catKey;
+    customItemsStore[catKey] = customItemsStore[catKey] || [];
+    customItemsStore[catKey].push(newItem);
+    saveCustomList(catKey).then(()=> setState({ view:"category" }) );
+  }
+  else if(action==="delete-item"){
+    const t = T();
+    if(!confirm(t.deleteConfirm)) return;
+    const catKey = state.catKey;
+    customItemsStore[catKey] = (customItemsStore[catKey]||[]).filter(it=>it.id!==state.itemId);
+    saveCustomList(catKey).then(()=> setState({ view:"category" }) );
+  }
+});
+
+/* ============================= INIT ============================= */
+(async function init(){
+  render();
+  await loadStorage();
+  state.loaded = true;
+  render();
+})();
+</script>
+</body>
+</html>
