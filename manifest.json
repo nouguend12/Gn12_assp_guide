@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Assp guide gn",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Asspgn",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "دليل تفاعلي للأخصائي الاجتماعي - برامج التكفل الاجتماعي بالجزائر"
+}
